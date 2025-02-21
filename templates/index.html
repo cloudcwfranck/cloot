@@ -367,16 +367,16 @@
     <div id="autocomplete" class="autocomplete"></div>
 
     <script>
-        // Define functions in global scope
+        // Initialize global variables
+        let searchHistory = new Set();
+        
         function initPrism() {
-                if (typeof Prism === 'undefined') {
-                    setTimeout(initPrism, 100);
-                    return;
-                }
-                Prism.highlightAll();
+            if (typeof Prism === 'undefined') {
+                setTimeout(initPrism, 100);
+                return;
             }
-            
-            initPrism();
+            Prism.highlightAll();
+        }
 
         const cloudCommands = [
             'Create EC2 instance',
@@ -569,16 +569,12 @@
             input.value = '';
         }
 
-        // Initialize event listeners
-            document.getElementById('queryForm').addEventListener('submit', handleSubmit);
-            document.getElementById('queryInput').addEventListener('input', handleInput);
-        // Initialize event listeners when DOM is ready
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('queryForm').addEventListener('submit', handleSubmit);
             document.getElementById('queryInput').addEventListener('input', handleInput);
             initPrism();
         });
-
-        let searchHistory = new Set();
     </script>
 </body>
 </html>
