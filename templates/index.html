@@ -3,169 +3,230 @@
 <html>
 <head>
     <title>CCWFCLI</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/themes/prism.min.css" rel="stylesheet" />
     <style>
-        :root {
-            --bg-color: #f5f5f5;
-            --text-color: #000;
-            --container-bg: #fff;
-            --code-bg: #1e1e1e;
-            --suggestion-bg: #f0f0f0;
-        }
-        [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --text-color: #fff;
-            --container-bg: #2d2d2d;
-            --suggestion-bg: #3d3d3d;
-        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            max-width: 1000px;
-            margin: 40px auto;
+            margin: 0;
             padding: 20px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background: #f5f5f5;
         }
         .chat-container {
-            background: var(--container-bg);
-            border-radius: 8px;
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
+            padding: 24px;
         }
         .header {
             display: flex;
             align-items: center;
-            gap: 15px;
+            justify-content: space-between;
             margin-bottom: 20px;
-            padding-bottom: 10px;
             border-bottom: 1px solid #eee;
+            padding-bottom: 16px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         .logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+        }
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .theme-controls {
+            display: flex;
+            gap: 8px;
+        }
+        .description {
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        .suggestions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        .suggestion-pill {
+            background: #f0f0ff;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            color: #4444ff;
+        }
+        .suggestion-pill:hover {
+            background: #e0e0ff;
+        }
+        .input-container {
+            position: relative;
+            margin-bottom: 16px;
         }
         .message-input {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 14px;
-            background: var(--container-bg);
-            color: var(--text-color);
+            box-sizing: border-box;
+        }
+        .send-button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #000;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
         }
         .response-area {
-            margin: 20px 0;
-            font-family: 'Fira Code', monospace;
+            margin-top: 24px;
         }
         .code-block {
             position: relative;
-            margin: 10px 0;
+            margin: 16px 0;
+            background: #f8f8f8;
+            border-radius: 8px;
+            overflow: hidden;
         }
         .copy-button {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 5px 10px;
+            top: 8px;
+            right: 8px;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #ddd;
+            padding: 4px 8px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 12px;
         }
         .expandable {
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin: 10px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin: 16px 0;
         }
         .expandable-header {
-            padding: 10px;
-            background: var(--suggestion-bg);
+            padding: 12px;
+            background: #f8f8f8;
             cursor: pointer;
+            font-weight: 500;
         }
         .expandable-content {
-            padding: 10px;
+            padding: 12px;
             display: none;
         }
         .cost-estimate {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 10px;
+            background: #fff8f8;
+            border-left: 4px solid #ff4444;
+            padding: 12px;
+            margin: 16px 0;
             border-radius: 4px;
-            margin: 10px 0;
         }
-        .suggestions-container {
+        [data-theme="dark"] {
+            background: #1a1a1a;
+            color: #fff;
+        }
+        [data-theme="dark"] .chat-container {
+            background: #2d2d2d;
+        }
+        [data-theme="dark"] .message-input {
+            background: #333;
+            color: #fff;
+            border-color: #444;
+        }
+        [data-theme="dark"] .suggestion-pill {
+            background: #333;
+            color: #99f;
+        }
+        .autocomplete {
             position: absolute;
-            width: 100%;
-            background: var(--container-bg);
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            max-height: 200px;
-            overflow-y: auto;
+            border-radius: 8px;
+            margin-top: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             display: none;
         }
-        .suggestion-item {
-            padding: 8px;
+        .autocomplete-item {
+            padding: 8px 12px;
             cursor: pointer;
         }
-        .suggestion-item:hover {
-            background: var(--suggestion-bg);
-        }
-        .theme-switch {
-            cursor: pointer;
-            padding: 5px;
-        }
-        .signature {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
+        .autocomplete-item:hover {
+            background: #f0f0f0;
         }
     </style>
 </head>
 <body>
     <div class="chat-container">
         <div class="header">
-            <img src="/attached_assets/CCWF logo.jpg" alt="CCWFCLI Logo" class="logo">
-            <h1>CCWFCLI</h1>
-            <div>
-                <span class="theme-switch" onclick="toggleTheme()">🌓</span>
+            <div class="header-left">
+                <img src="/attached_assets/CCWF logo.jpg" alt="CCWFCLI Logo" class="logo">
+                <h1 class="title">CCWFCLI</h1>
+            </div>
+            <div class="theme-controls">
+                <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer;">🌓</button>
                 <span>☁️</span>
             </div>
         </div>
-        <p>As an engineer, I usually find myself spending a lot of time googling, so I made this tool for IT engineers to help facilitate this process.</p>
-        <div class="response-area" id="responseArea"></div>
+        
+        <p class="description">
+            As an engineer, I usually find myself spending a lot of time googling, so I made this tool for IT engineers to help facilitate this process.
+        </p>
+
+        <div class="suggestions">
+            <button class="suggestion-pill" onclick="selectSuggestion('How does AWS EC2 auto-scaling work?')">AWS EC2 Auto-scaling</button>
+            <button class="suggestion-pill" onclick="selectSuggestion('Azure AKS vs EKS comparison')">Azure AKS vs EKS</button>
+            <button class="suggestion-pill" onclick="selectSuggestion('GCP Cloud Run setup')">GCP Cloud Run</button>
+            <button class="suggestion-pill" onclick="selectSuggestion('Terraform best practices')">Terraform Best Practices</button>
+        </div>
+
         <form id="queryForm" onsubmit="return handleSubmit(event)">
-            <div style="position: relative;">
+            <div class="input-container">
                 <input type="text" class="message-input" id="queryInput" 
                        placeholder="Ask about cloud infrastructure..."
                        oninput="handleInput(event)">
-                <div id="suggestions" class="suggestions-container"></div>
+                <button type="submit" class="send-button">Send</button>
+                <div id="autocomplete" class="autocomplete"></div>
             </div>
         </form>
-        <div class="signature">
-            <p>CloudCraftWithFranck</p>
-            <a href="https://www.cloudcraftwithfranck.org/" target="_blank">Visit my website</a>
-        </div>
+
+        <div class="response-area" id="responseArea"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-bash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-hcl.min.js"></script>
+    
     <script>
-        // Initialize Prism
         if (typeof Prism !== 'undefined') {
             Prism.highlightAll();
         }
-    </script>
-    
-    <script>
-        const commonQueries = [
-            'How to create an EC2 instance with Terraform?',
-            'Deploy a containerized app on Azure AKS',
-            'Setup a GCP Cloud Function',
-            'Create an AWS Lambda function'
+
+        const cloudCommands = [
+            'Create EC2 instance',
+            'Setup Azure VM',
+            'Deploy to GCP',
+            'Configure AWS VPC',
+            'Setup Kubernetes cluster',
+            'Create Azure Function',
+            'Configure AWS Lambda',
+            'Setup GCP Cloud Run'
         ];
 
         function toggleTheme() {
@@ -175,55 +236,66 @@
 
         function handleInput(event) {
             const input = event.target.value.toLowerCase();
-            const suggestions = document.getElementById('suggestions');
+            const autocomplete = document.getElementById('autocomplete');
             
             if (input.length < 2) {
-                suggestions.style.display = 'none';
+                autocomplete.style.display = 'none';
                 return;
             }
 
-            const filtered = commonQueries.filter(q => 
-                q.toLowerCase().includes(input)
+            const matches = cloudCommands.filter(cmd => 
+                cmd.toLowerCase().includes(input)
             );
 
-            suggestions.innerHTML = filtered.map(q => 
-                `<div class="suggestion-item" onclick="selectSuggestion('${q}')">${q}</div>`
-            ).join('');
-            
-            suggestions.style.display = filtered.length ? 'block' : 'none';
+            if (matches.length) {
+                autocomplete.innerHTML = matches
+                    .map(cmd => `<div class="autocomplete-item" onclick="selectSuggestion('${cmd}')">${cmd}</div>`)
+                    .join('');
+                autocomplete.style.display = 'block';
+            } else {
+                autocomplete.style.display = 'none';
+            }
         }
 
         function selectSuggestion(query) {
             document.getElementById('queryInput').value = query;
-            document.getElementById('suggestions').style.display = 'none';
+            document.getElementById('autocomplete').style.display = 'none';
             handleSubmit(new Event('submit'));
         }
 
         function formatResponse(response) {
-            // Split response into sections
-            const sections = response.split('---');
             let html = '';
+            const sections = response.split('\n');
+            
+            let inCodeBlock = false;
+            let codeContent = '';
+            let language = '';
             
             sections.forEach(section => {
-                if (section.includes('```')) {
-                    const language = section.includes('terraform') ? 'hcl' : 'bash';
-                    html += `
-                        <div class="code-block">
-                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
-                            <pre><code class="language-${language}">${section.replace(/```[a-z]*\n/g, '').replace(/```/g, '')}</code></pre>
-                        </div>
-                    `;
+                if (section.startsWith('```')) {
+                    if (!inCodeBlock) {
+                        language = section.slice(3) || 'bash';
+                        inCodeBlock = true;
+                        codeContent = '';
+                    } else {
+                        html += `
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><code class="language-${language}">${codeContent}</code></pre>
+                            </div>
+                        `;
+                        inCodeBlock = false;
+                    }
+                } else if (inCodeBlock) {
+                    codeContent += section + '\n';
                 } else if (section.includes('[Cost Estimate]')) {
                     html += `<div class="cost-estimate">${section}</div>`;
                 } else if (section.includes('[Advanced]')) {
-                    const title = section.split('\n')[0];
-                    const content = section.split('\n').slice(1).join('\n');
+                    const title = section;
                     html += `
                         <div class="expandable">
-                            <div class="expandable-header" onclick="toggleExpand(this)">
-                                ${title}
-                            </div>
-                            <div class="expandable-content">${content}</div>
+                            <div class="expandable-header" onclick="toggleExpand(this)">${title}</div>
+                            <div class="expandable-content"></div>
                         </div>
                     `;
                 } else {
@@ -252,19 +324,22 @@
             const responseArea = document.getElementById('responseArea');
             const query = input.value;
             
-            responseArea.innerHTML = 'Generating response...';
+            if (!query.trim()) return;
+            
+            responseArea.innerHTML = '<p>Generating response...</p>';
             
             try {
                 const response = await fetch('/ask', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({query: query})
+                    body: JSON.stringify({query})
                 });
+                
                 const data = await response.text();
                 responseArea.innerHTML = formatResponse(data);
                 Prism.highlightAll();
             } catch (error) {
-                responseArea.innerHTML = 'Error: ' + error;
+                responseArea.innerHTML = `<p style="color: red">Error: ${error.message}</p>`;
             }
             
             input.value = '';
