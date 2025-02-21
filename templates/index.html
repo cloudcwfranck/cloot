@@ -367,8 +367,13 @@
     <div id="autocomplete" class="autocomplete"></div>
 
     <script>
-        // Initialize global variables and functions
+        // Initialize global variables
         const searchHistory = new Set();
+        
+        // Initialize tips div
+        const tipsDiv = document.createElement('div');
+        tipsDiv.id = 'tips';
+        document.querySelector('.chat-container').appendChild(tipsDiv);
 
         function initPrism() {
             if (typeof Prism === 'undefined') {
@@ -525,7 +530,7 @@
             content.style.display = content.style.display === 'block' ? 'none' : 'block';
         }
 
-        function handleSubmit(event) {
+        async function handleSubmit(event) {
             event.preventDefault();
             const input = document.getElementById('queryInput');
             const responseArea = document.getElementById('responseArea');
