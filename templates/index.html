@@ -367,8 +367,9 @@
     <div id="autocomplete" class="autocomplete"></div>
 
     <script>
-        // Wait for Prism to be loaded
-        function initPrism() {
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait for Prism to be loaded
+            function initPrism() {
             if (typeof Prism === 'undefined') {
                 setTimeout(initPrism, 100);
                 return;
@@ -570,12 +571,13 @@
         }
 
         function resetChat() {
-            document.getElementById('responseArea').innerHTML = '';
-            document.getElementById('executionTime').innerHTML = '';
-            document.getElementById('tips').innerHTML = '';
-            document.getElementById('queryInput').value = '';
-            searchHistory.clear();
-        }
+                document.getElementById('responseArea').innerHTML = '';
+                document.getElementById('executionTime').innerHTML = '';
+                document.getElementById('tips').innerHTML = '';
+                document.getElementById('queryInput').value = '';
+                searchHistory.clear();
+            }
+        });
     </script>
 </body>
 </html>
