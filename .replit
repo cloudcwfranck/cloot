@@ -15,7 +15,7 @@ run = ["python3", "main.py"]
 deploymentTarget = "cloudrun"
 
 [workflows]
-runButton = "Run CloudBot"
+runButton = "Run CloudBot Web"
 
 [[workflows.workflow]]
 name = "Run CloudBot"
@@ -24,3 +24,15 @@ author = 37924658
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python main.py ask 'Create an Azure VM'"
+
+[[workflows.workflow]]
+name = "Run CloudBot Web"
+author = 37924658
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python cli.py"
+
+[[ports]]
+localPort = 8080
+externalPort = 80
