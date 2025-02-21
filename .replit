@@ -13,3 +13,14 @@ requiredFiles = [".replit", "replit.nix"]
 [deployment]
 run = ["python3", "main.py"]
 deploymentTarget = "cloudrun"
+
+[workflows]
+runButton = "Run CloudBot"
+
+[[workflows.workflow]]
+name = "Run CloudBot"
+author = 37924658
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py ask 'Create an Azure VM'"
