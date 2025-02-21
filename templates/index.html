@@ -1,70 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cloot</title>
+    <title>Cloot - AI Cloud Assistant</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/themes/prism.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
-        @keyframes float {
-            0% { transform: translateY(0px) translateX(0px) scale(1); }
-            25% { transform: translateY(-15px) translateX(15px) scale(1.1); }
-            50% { transform: translateY(-25px) translateX(5px) scale(1); }
-            75% { transform: translateY(-15px) translateX(-15px) scale(0.95); }
-            100% { transform: translateY(0px) translateX(0px) scale(1); }
-        }
-
-        .cloud {
-            position: fixed;
-            opacity: 0.25;
-            z-index: -1;
-            pointer-events: none;
-            font-size: 80px;
-            filter: blur(0.5px);
-            transition: all 0.3s ease;
-        }
-
-        .cloud:nth-child(1) {
-            top: 15%;
-            left: 10%;
-            animation: float 12s ease-in-out infinite;
-        }
-
-        .cloud:nth-child(2) {
-            top: 45%;
-            right: 15%;
-            animation: float 15s ease-in-out infinite;
-            animation-delay: -2s;
-            font-size: 72px;
-        }
-
-        .cloud:nth-child(3) {
-            top: 25%;
-            right: 35%;
-            animation: float 18s ease-in-out infinite;
-            animation-delay: -5s;
-            font-size: 48px;
-        }
-
-        .cloud:nth-child(4) {
-            bottom: 20%;
-            left: 25%;
-            animation: float 20s ease-in-out infinite;
-            animation-delay: -8s;
-        }
-
-        .cloud:nth-child(5) {
-            top: 70%;
-            right: 40%;
-            animation: float 16s ease-in-out infinite;
-            animation-delay: -12s;
-            font-size: 56px;
-        }
-
-        [data-theme="dark"] .cloud {
-            opacity: 0.15;
-            filter: blur(1px);
-        }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
@@ -77,6 +17,7 @@
             justify-content: center;
             overflow-x: hidden;
             position: relative;
+            color: #1a1a1a;
         }
         .footer {
             text-align: center;
@@ -174,6 +115,14 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .send-button:hover {
+            background: #3333cc;
+            transform: translateY(-50%) scale(1.02);
         }
         .code-block {
             position: relative;
@@ -189,27 +138,6 @@
             border-radius: 12px;
             border-left: 4px solid #4444ff;
             margin: 16px 0;
-        }
-        .send-button {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: #4444ff;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-        .send-button:hover {
-            background: #3333cc;
-            transform: translateY(-50%) scale(1.02);
         }
         .copy-button {
             position: absolute;
@@ -309,59 +237,6 @@
             border-radius: 4px;
             font-size: 14px;
         }
-    </style>
-</head>
-<body>
-    <div class="cloud">☁️</div>
-    <div class="cloud">☁️</div>
-    <div class="cloud">☁️</div>
-    <div class="cloud">☁️</div>
-    <div class="cloud">☁️</div>
-    <div class="chat-container">
-        <div class="header">
-            <h1 class="title">Cloot</h1>
-            <div class="theme-controls">
-                <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; font-size: 24px;">🌓</button>
-                <button onclick="resetChat()" style="background: none; border: none; cursor: pointer; font-size: 24px;">🔄</button>
-                <span style="font-size: 24px;">☁️</span>
-            </div>
-        </div>
-
-        <p class="description">
-            Welcome to Cloot – Your AI-Powered Cloud Assistant!
-            As a cloud engineer, spending hours searching for the right commands slows you down. Cloot simplifies cloud management by generating accurate AWS, Azure, GCP CLI commands, Terraform scripts, and cost-saving recommendations—all in seconds.
-        </p>
-
-        <div class="response-area" id="responseArea"></div>
-        <div id="executionTime" class="execution-time"></div>
-
-        <div class="suggestions" id="rotatingPills"></div>
-
-        <form id="queryForm" onsubmit="return handleSubmit(event)">
-            <div class="input-container">
-                <input type="text" class="message-input" id="queryInput" 
-                       placeholder="Ask about cloud infrastructure..."
-                       oninput="handleInput(event)">
-                <button type="submit" class="send-button">
-                    <span>Send</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-            </div>
-        </form>
-    </div>
-
-    <div class="footer">
-        Built with ❤️ by <a href="https://www.cloudcraftwithfranck.org/" target="_blank">CloudCraftWithFranck</a>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-bash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-hcl.min.js"></script>
-    <div id="autocomplete" class="autocomplete"></div>
-
-    <style>
         .news-popup {
             position: fixed;
             bottom: 20px;
@@ -385,10 +260,113 @@
             from { transform: translateX(100%); }
             to { transform: translateX(0); }
         }
+        @keyframes float {
+            0% { transform: translateY(0px) translateX(0px) scale(1); }
+            25% { transform: translateY(-15px) translateX(15px) scale(1.1); }
+            50% { transform: translateY(-25px) translateX(5px) scale(1); }
+            75% { transform: translateY(-15px) translateX(-15px) scale(0.95); }
+            100% { transform: translateY(0px) translateX(0px) scale(1); }
+        }
+
+        .cloud {
+            position: fixed;
+            opacity: 0.25;
+            z-index: -1;
+            pointer-events: none;
+            font-size: 80px;
+            filter: blur(0.5px);
+            transition: all 0.3s ease;
+        }
+
+        .cloud:nth-child(1) {
+            top: 15%;
+            left: 10%;
+            animation: float 12s ease-in-out infinite;
+        }
+
+        .cloud:nth-child(2) {
+            top: 45%;
+            right: 15%;
+            animation: float 15s ease-in-out infinite;
+            animation-delay: -2s;
+            font-size: 72px;
+        }
+
+        .cloud:nth-child(3) {
+            top: 25%;
+            right: 35%;
+            animation: float 18s ease-in-out infinite;
+            animation-delay: -5s;
+            font-size: 48px;
+        }
+
+        .cloud:nth-child(4) {
+            bottom: 20%;
+            left: 25%;
+            animation: float 20s ease-in-out infinite;
+            animation-delay: -8s;
+        }
+
+        .cloud:nth-child(5) {
+            top: 70%;
+            right: 40%;
+            animation: float 16s ease-in-out infinite;
+            animation-delay: -12s;
+            font-size: 56px;
+        }
+
+        [data-theme="dark"] .cloud {
+            opacity: 0.15;
+            filter: blur(1px);
+        }
     </style>
+</head>
+<body>
+    <div class="cloud">☁️</div>
+    <div class="cloud">☁️</div>
+    <div class="cloud">☁️</div>
+    <div class="cloud">☁️</div>
+    <div class="cloud">☁️</div>
+    <div class="chat-container">
+        <div class="header">
+            <h1 class="title">Cloot</h1>
+            <div class="theme-controls">
+                <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; font-size: 24px;">🌓</button>
+                <button onclick="resetChat()" style="background: none; border: none; cursor: pointer; font-size: 24px;">🔄</button>
+                <span style="font-size: 24px;">☁️</span>
+            </div>
+        </div>
 
-    <div id="newsPopup" class="news-popup"></div>
+        <p class="description">
+            Welcome to Cloot – Your AI-Powered Cloud Assistant!
+            As a cloud engineer, spending hours searching for the right commands slows you down. Cloot simplifies cloud management by generating accurate AWS, Azure, GCP CLI commands, Terraform scripts, and cost-saving recommendations—all in seconds.
+        </p>
 
+        <div id="responseArea" class="response-area"></div>
+        <div id="executionTime" class="execution-time"></div>
+
+        <div id="rotatingPills" class="suggestions"></div>
+
+        <div class="input-container">
+            <input type="text" class="message-input" id="queryInput" 
+                   placeholder="Ask about cloud infrastructure..."
+                   oninput="handleInput(event)">
+            <button class="send-button" onclick="handleSubmit(event)">
+                <span>Send</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div id="autocomplete" class="autocomplete"></div>
+    <div class="footer">
+        Built with ❤️ by <a href="https://www.cloudcraftwithfranck.org/" target="_blank">CloudCraftWithFranck</a>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-hcl.min.js"></script>
     <script>
         // Initialize global variables
         const searchHistory = new Set();
@@ -445,10 +423,10 @@
                 </div>
             `;
             newsPopup.style.display = 'block';
-            
+
             setTimeout(() => {
                 newsPopup.style.display = 'none';
-            }, 15000); // Extended to 15 seconds (10s read + 5s original)
+            }, 15000); 
         }
 
         function resetActivityTimer() {
@@ -468,7 +446,7 @@
 
         // Initial timer
         resetActivityTimer();
-        
+
         // Initialize tips div
         const tipsDiv = document.createElement('div');
         tipsDiv.id = 'tips';
@@ -495,70 +473,43 @@
             searchHistory.clear();
         }
 
-        const cloudCommands = [
-            'Create EC2 instance',
-            'Setup Azure VM',
-            'Deploy to GCP',
-            'Configure AWS VPC',
-            'Setup Kubernetes cluster',
-            'Create Azure Function',
-            'Configure AWS Lambda',
-            'Setup GCP Cloud Run'
-        ];
+        let allSuggestionPills = [];
+        const responseArea = document.getElementById('responseArea');
+        const input = document.getElementById('queryInput');
 
-        function handleInput(event) {
-            const input = event.target.value.toLowerCase();
-            const autocomplete = document.getElementById('autocomplete');
-
-            if (!input || input.length < 2) {
-                autocomplete.style.display = 'none';
-                return;
-            }
-
-            // Dynamic suggestions based on input
-            const allSuggestions = {
-                aws: ['Create EC2 instance', 'Configure AWS VPC', 'Setup AWS Lambda', 'S3 bucket policies'],
-                azure: ['Setup Azure VM', 'Create Azure Function', 'Configure Azure AD', 'AKS deployment'],
-                gcp: ['Deploy to GCP', 'Setup GCP Cloud Run', 'GCP Load Balancer', 'Cloud Functions'],
-                terraform: ['Terraform AWS setup', 'Azure Terraform config', 'GCP Terraform modules', 'Remote state'],
-                kubernetes: ['EKS setup', 'AKS deployment', 'GKE configuration', 'K8s best practices']
-            };
-
-            let relevantSuggestions = [];
-            if (input.includes('aws')) relevantSuggestions = allSuggestions.aws;
-            else if (input.includes('azure')) relevantSuggestions = allSuggestions.azure;
-            else if (input.includes('gcp')) relevantSuggestions = allSuggestions.gcp;
-            else if (input.includes('terraform')) relevantSuggestions = allSuggestions.terraform;
-            else if (input.includes('kubernetes')) relevantSuggestions = allSuggestions.kubernetes;
-            else relevantSuggestions = Object.values(allSuggestions).flat();
-
-            const matches = relevantSuggestions.filter(cmd => 
-                cmd.toLowerCase().includes(input)
-            );
-
-            if (matches.length) {
-                autocomplete.innerHTML = matches
-                    .map(cmd => `<div class="autocomplete-item" onclick="selectSuggestion('${cmd}')">${cmd}</div>`)
-                    .join('');
-                autocomplete.style.display = 'block';
-            } else {
-                autocomplete.style.display = 'none';
+        async function fetchSuggestions() {
+            try {
+                const response = await fetch('/suggestions');
+                const suggestions = await response.json();
+                allSuggestionPills = suggestions;
+                updateSuggestionPills();
+            } catch (error) {
+                console.error('Error fetching suggestions:', error);
             }
         }
 
         function selectSuggestion(query) {
-            const inputElement = document.getElementById('queryInput');
-            inputElement.value = query;
-            document.getElementById('autocomplete').style.display = 'none';
-            searchHistory.add(query.toLowerCase());
-            // Create a new submit event
-            const event = new Event('submit', {cancelable: true});
-            document.getElementById('queryForm').dispatchEvent(event);
+            input.value = query;
+            handleSubmit(new Event('submit'));
         }
 
-        function formatResponse(response) {
+        function getRandomPills(array, count) {
+            const shuffled = [...array].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function updateSuggestionPills() {
+            const pillsContainer = document.getElementById('rotatingPills');
+            const selectedPills = getRandomPills(allSuggestionPills, 4);
+
+            pillsContainer.innerHTML = selectedPills
+                .map(pill => `<button class="suggestion-pill" onclick="selectSuggestion('${pill.query}')">${pill.text}</button>`)
+                .join('');
+        }
+
+        function formatResponse(text) {
             let html = '';
-            const sections = response.split('\n');
+            const sections = text.split('\n');
 
             let inCodeBlock = false;
             let codeContent = '';
@@ -631,9 +582,7 @@
 
         async function handleSubmit(event) {
             event.preventDefault();
-            const input = document.getElementById('queryInput');
-            const responseArea = document.getElementById('responseArea');
-            const query = input.value;
+            const query = document.getElementById('queryInput').value;
 
             if (!query.trim()) return;
 
@@ -680,44 +629,71 @@
         }
 
         // Initialize when DOM is ready
-        let allSuggestionPills = [];
-
-async function fetchSuggestions() {
-    try {
-        const response = await fetch('/suggestions');
-        const suggestions = await response.json();
-        allSuggestionPills = suggestions;
-        updateSuggestionPills();
-    } catch (error) {
-        console.error('Error fetching suggestions:', error);
-    }
-}
-
-// Fetch suggestions on page load
-fetchSuggestions();
-// Refresh suggestions every 2 minutes
-setInterval(fetchSuggestions, 120000);
-
-        function getRandomPills(array, count) {
-            const shuffled = [...array].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, count);
-        }
-
-        function updateSuggestionPills() {
-            const pillsContainer = document.getElementById('rotatingPills');
-            const selectedPills = getRandomPills(allSuggestionPills, 4);
-            
-            pillsContainer.innerHTML = selectedPills
-                .map(pill => `<button class="suggestion-pill" onclick="selectSuggestion('${pill.query}')">${pill.text}</button>`)
-                .join('');
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('queryForm').addEventListener('submit', handleSubmit);
+            fetchSuggestions();
             document.getElementById('queryInput').addEventListener('input', handleInput);
             updateSuggestionPills();
             initPrism();
         });
+
+        const cloudCommands = [
+            'Create EC2 instance',
+            'Setup Azure VM',
+            'Deploy to GCP',
+            'Configure AWS VPC',
+            'Setup Kubernetes cluster',
+            'Create Azure Function',
+            'Configure AWS Lambda',
+            'Setup GCP Cloud Run'
+        ];
+
+        function handleInput(event) {
+            const input = event.target.value.toLowerCase();
+            const autocomplete = document.getElementById('autocomplete');
+
+            if (!input || input.length < 2) {
+                autocomplete.style.display = 'none';
+                return;
+            }
+
+            // Dynamic suggestions based on input
+            const allSuggestions = {
+                aws: ['Create EC2 instance', 'Configure AWS VPC', 'Setup AWS Lambda', 'S3 bucket policies'],
+                azure: ['Setup Azure VM', 'Create Azure Function', 'Configure Azure AD', 'AKS deployment'],
+                gcp: ['Deploy to GCP', 'Setup GCP Cloud Run', 'GCP Load Balancer', 'Cloud Functions'],
+                terraform: ['Terraform AWS setup', 'Azure Terraform config', 'GCP Terraform modules', 'Remote state'],
+                kubernetes: ['EKS setup', 'AKS deployment', 'GKE configuration', 'K8s best practices']
+            };
+
+            let relevantSuggestions = [];
+            if (input.includes('aws')) relevantSuggestions = allSuggestions.aws;
+            else if (input.includes('azure')) relevantSuggestions = allSuggestions.azure;
+            else if (input.includes('gcp')) relevantSuggestions = allSuggestions.gcp;
+            else if (input.includes('terraform')) relevantSuggestions = allSuggestions.terraform;
+            else if (input.includes('kubernetes')) relevantSuggestions = allSuggestions.kubernetes;
+            else relevantSuggestions = Object.values(allSuggestions).flat();
+
+            const matches = relevantSuggestions.filter(cmd => 
+                cmd.toLowerCase().includes(input)
+            );
+
+            if (matches.length) {
+                autocomplete.innerHTML = matches
+                    .map(cmd => `<div class="autocomplete-item" onclick="selectSuggestion('${cmd}')">${cmd}</div>`)
+                    .join('');
+                autocomplete.style.display = 'block';
+            } else {
+                autocomplete.style.display = 'none';
+            }
+        }
+
+        // Refresh suggestions every 2 minutes
+        setInterval(fetchSuggestions, 120000);
+
+        //Added a news popup div
+        const newsPopupDiv = document.createElement('div');
+        newsPopupDiv.id = 'newsPopup';
+        document.body.appendChild(newsPopupDiv);
     </script>
 </body>
 </html>
