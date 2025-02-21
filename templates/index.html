@@ -273,7 +273,7 @@
             </div>
         </form>
     </div>
-    
+
     <div class="footer">
         Built with ❤️ by <a href="https://www.cloudcraftwithfranck.org/" target="_blank">CloudCraftWithFranck</a>
     </div>
@@ -282,7 +282,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-bash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-hcl.min.js"></script>
     <div id="autocomplete" class="autocomplete"></div>
-    
+
     <script>
         // Wait for Prism to be loaded
         function initPrism() {
@@ -316,7 +316,7 @@
         function handleInput(event) {
             const input = event.target.value.toLowerCase();
             const autocomplete = document.getElementById('autocomplete');
-            
+
             if (!input || input.length < 2) {
                 autocomplete.style.display = 'none';
                 return;
@@ -366,12 +366,12 @@
         function formatResponse(response) {
             let html = '';
             const sections = response.split('\n');
-            
+
             let inCodeBlock = false;
             let codeContent = '';
             let language = '';
             let currentResponse = '';
-            
+
             sections.forEach(section => {
                 if (section.startsWith('```')) {
                     if (!inCodeBlock) {
@@ -406,7 +406,7 @@
                     }
                     html += `
                         <div class="expandable">
-                            <div class="expandable-header" onclick="toggleExpand(this)">${title}</div>
+                            <div class="expandable-header" onclick="toggleExpand(this)">${section}</div>
                             <div class="expandable-content"></div>
                         </div>
                     `;
@@ -416,11 +416,11 @@
                     currentResponse += parsedSection + '<br>';
                 }
             });
-            
+
             if (currentResponse.trim()) {
                 html += `<div class="ai-response">${currentResponse}</div>`;
             }
-            
+
             return html;
         }
 
@@ -441,26 +441,30 @@
             const input = document.getElementById('queryInput');
             const responseArea = document.getElementById('responseArea');
             const query = input.value;
-            
+
             if (!query.trim()) return;
-            
+
             responseArea.innerHTML = '<p>Cloot is thinking...</p>';
             const startTime = performance.now();
-            
+
             try {
                 const response = await fetch('/ask', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({query})
                 });
-                
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.text();
                 const endTime = performance.now();
                 const executionTime = ((endTime - startTime) / 1000).toFixed(1);
-                
+
                 responseArea.innerHTML = formatResponse(data);
                 document.getElementById('executionTime').innerHTML = `Generated in ${executionTime}s`;
-                
+
                 // Generate a relevant tip
                 const tips = [
                     "💡 You can use arrow keys to navigate through command history",
@@ -471,14 +475,14 @@
                 ];
                 const randomTip = tips[Math.floor(Math.random() * tips.length)];
                 document.getElementById('tips').innerHTML = randomTip;
-                
+
                 initPrism();
             } catch (error) {
                 responseArea.innerHTML = `<p style="color: red">Error: ${error.message}</p>`;
                 document.getElementById('executionTime').innerHTML = '';
                 document.getElementById('tips').innerHTML = '';
             }
-            
+
             input.value = '';
         }
     </script>

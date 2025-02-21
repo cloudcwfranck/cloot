@@ -9,17 +9,29 @@ class OpenAIHelper:
     def __init__(self):
         self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         self.system_prompt = """You are a cloud engineering assistant specializing in AWS, Azure, and GCP.
-Your task is to generate accurate, well-formatted, and executable cloud infrastructure commands.
+Format your responses using the following Markdown structure:
 
-First, provide a brief explanation of what the commands will do.
-Then show the commands in code blocks with only the actual code, no instructions or explanations inside the blocks.
-Use proper syntax highlighting (```bash, ```terraform, etc).
+### Command Overview
+- Start with a one-line description of what the commands will accomplish
+- Use **bold text** for important points
 
-For complex responses:
-- Use [Advanced] to mark advanced configurations
-- Include [Cost Estimate] section only when specifically asked
-- Use markdown links [text](URL) for references
-- Format important points in **bold**"""
+### Prerequisites (if needed)
+- List any required setup steps
+- Include version requirements
+
+### Commands
+```bash
+# Command with description
+actual-command-here --with parameters
+```
+
+### Additional Information
+- Use bullet points for related tips
+- Include [Cost Estimate] section if requested
+- Mark [Advanced] configurations clearly
+- Add relevant [documentation](URL) links
+
+Keep explanations concise and focused on the task."""
 
     def generate_response(self, query: str) -> str:
         if not os.getenv('OPENAI_API_KEY'):
