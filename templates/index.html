@@ -401,24 +401,59 @@
         let newsTimeout;
 
         const techNews = [
-            "OpenAI releases GPT-4 Turbo with improved capabilities",
-            "Microsoft announces new Azure AI features",
-            "AWS launches new EC2 instance types",
-            "Google Cloud introduces new security features",
-            "Meta releases new AI model for code generation",
-            "Apple announces new developer tools",
-            "GitHub Copilot adds new features"
+            {
+                text: "OpenAI releases GPT-4 Turbo with improved capabilities",
+                source: "OpenAI Blog",
+                link: "https://openai.com/blog"
+            },
+            {
+                text: "Microsoft announces new Azure AI features",
+                source: "Azure Blog",
+                link: "https://azure.microsoft.com/blog"
+            },
+            {
+                text: "AWS launches new EC2 instance types",
+                source: "AWS News",
+                link: "https://aws.amazon.com/news"
+            },
+            {
+                text: "Google Cloud introduces new security features",
+                source: "Google Cloud Blog",
+                link: "https://cloud.google.com/blog"
+            },
+            {
+                text: "Meta releases new AI model for code generation",
+                source: "Meta AI Blog",
+                link: "https://ai.meta.com/blog"
+            },
+            {
+                text: "Apple announces new developer tools",
+                source: "Apple Newsroom",
+                link: "https://www.apple.com/newsroom"
+            },
+            {
+                text: "GitHub Copilot adds new features",
+                source: "GitHub Blog",
+                link: "https://github.blog"
+            }
         ];
 
         function showRandomNews() {
             const newsPopup = document.getElementById('newsPopup');
             const randomNews = techNews[Math.floor(Math.random() * techNews.length)];
-            newsPopup.textContent = randomNews;
+            newsPopup.innerHTML = `
+                <div>${randomNews.text}</div>
+                <div style="margin-top: 5px; font-size: 0.8em;">
+                    <a href="${randomNews.link}" target="_blank" style="color: #4444ff; text-decoration: none;">
+                        Source: ${randomNews.source}
+                    </a>
+                </div>
+            `;
             newsPopup.style.display = 'block';
             
             setTimeout(() => {
                 newsPopup.style.display = 'none';
-            }, 5000);
+            }, 15000); // Extended to 15 seconds (10s read + 5s original)
         }
 
         function resetActivityTimer() {
