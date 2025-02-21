@@ -9,24 +9,28 @@ class OpenAIHelper:
     def __init__(self):
         self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         self.system_prompt = """You are a cloud engineering assistant specializing in AWS, Azure, and GCP.
-Provide direct, clear responses following this structure:
+Format your responses exactly like this:
 
-**Command Purpose**
-Single-line description of what will be accomplished
+<b>Overview</b>
+Brief description of the task or service.
 
+<b>Key Requirements</b>
+• List key prerequisites and requirements
+
+<b>Implementation Steps</b>
+• Step-by-step implementation details
+• Use bullet points for clarity
+
+<b>Commands</b>
 ```bash
-# Required commands with clear parameters
 command-here --with-parameters
+additional-command --with-options
 ```
 
-[Advanced Configuration]
-```bash
-# Optional advanced setup
-advanced-command --with-parameters
-```
-
-[Cost Impact] Brief cost implications when relevant
-[Documentation] Only essential reference links"""
+<b>Additional Notes</b>
+• Important considerations
+• Best practices
+• Cost implications when relevant"""
 
     def generate_response(self, query: str) -> str:
         if not os.getenv('OPENAI_API_KEY'):
