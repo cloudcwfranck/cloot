@@ -6,34 +6,63 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
         @keyframes float {
-            0% { transform: translateY(0px) translateX(0px); }
-            50% { transform: translateY(-20px) translateX(10px); }
-            100% { transform: translateY(0px) translateX(0px); }
+            0% { transform: translateY(0px) translateX(0px) scale(1); }
+            25% { transform: translateY(-15px) translateX(15px) scale(1.1); }
+            50% { transform: translateY(-25px) translateX(5px) scale(1); }
+            75% { transform: translateY(-15px) translateX(-15px) scale(0.95); }
+            100% { transform: translateY(0px) translateX(0px) scale(1); }
         }
 
         .cloud {
             position: fixed;
-            opacity: 0.1;
+            opacity: 0.15;
             z-index: -1;
             pointer-events: none;
+            font-size: 64px;
+            filter: blur(1px);
+            transition: all 0.3s ease;
         }
 
         .cloud:nth-child(1) {
-            top: 20%;
+            top: 15%;
             left: 10%;
-            animation: float 8s infinite;
+            animation: float 12s ease-in-out infinite;
         }
 
         .cloud:nth-child(2) {
-            top: 60%;
+            top: 45%;
             right: 15%;
-            animation: float 10s infinite;
+            animation: float 15s ease-in-out infinite;
+            animation-delay: -2s;
+            font-size: 72px;
         }
 
         .cloud:nth-child(3) {
-            top: 30%;
-            right: 30%;
-            animation: float 12s infinite;
+            top: 25%;
+            right: 35%;
+            animation: float 18s ease-in-out infinite;
+            animation-delay: -5s;
+            font-size: 48px;
+        }
+
+        .cloud:nth-child(4) {
+            bottom: 20%;
+            left: 25%;
+            animation: float 20s ease-in-out infinite;
+            animation-delay: -8s;
+        }
+
+        .cloud:nth-child(5) {
+            top: 70%;
+            right: 40%;
+            animation: float 16s ease-in-out infinite;
+            animation-delay: -12s;
+            font-size: 56px;
+        }
+
+        [data-theme="dark"] .cloud {
+            opacity: 0.08;
+            filter: blur(2px);
         }
 
         body {
@@ -283,6 +312,8 @@
     </style>
 </head>
 <body>
+    <div class="cloud">☁️</div>
+    <div class="cloud">☁️</div>
     <div class="cloud">☁️</div>
     <div class="cloud">☁️</div>
     <div class="cloud">☁️</div>
