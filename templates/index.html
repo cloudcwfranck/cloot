@@ -183,8 +183,11 @@
         </div>
 
         <p class="description">
-            As an engineer, I usually find myself spending a lot of time googling, so I made this tool for IT engineers to help facilitate this process.
+            Welcome to Cloot – Your AI-Powered Cloud Assistant!
+            As a cloud engineer, spending hours searching for the right commands slows you down. Cloot simplifies cloud management by generating accurate AWS, Azure, GCP CLI commands, Terraform scripts, and cost-saving recommendations—all in seconds.
         </p>
+
+        <div class="response-area" id="responseArea"></div>
 
         <div class="suggestions">
             <button class="suggestion-pill" onclick="selectSuggestion('How does AWS EC2 auto-scaling work?')">AWS EC2 Auto-scaling</button>
@@ -192,8 +195,6 @@
             <button class="suggestion-pill" onclick="selectSuggestion('GCP Cloud Run setup')">GCP Cloud Run</button>
             <button class="suggestion-pill" onclick="selectSuggestion('Terraform best practices')">Terraform Best Practices</button>
         </div>
-
-        <div class="response-area" id="responseArea"></div>
 
         <form id="queryForm" onsubmit="return handleSubmit(event)">
             <div class="input-container">
