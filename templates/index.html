@@ -695,8 +695,8 @@ async function fetchSuggestions() {
 
 // Fetch suggestions on page load
 fetchSuggestions();
-// Refresh suggestions every 5 minutes
-setInterval(fetchSuggestions, 300000);
+// Refresh suggestions every 2 minutes
+setInterval(fetchSuggestions, 120000);
 
         function getRandomPills(array, count) {
             const shuffled = [...array].sort(() => 0.5 - Math.random());
