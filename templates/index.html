@@ -328,7 +328,6 @@
         </div>
 
         <p class="description">
-            <span id="apiCounter">0 Questions Answered and counting</span><br>
             Welcome to Cloot – Your AI-Powered Cloud Assistant!
             As a cloud engineer, spending hours searching for the right commands slows you down. Cloot simplifies cloud management by generating accurate AWS, Azure, GCP CLI commands, Terraform scripts, and cost-saving recommendations—all in seconds.
         </p>
@@ -351,6 +350,17 @@
                 </button>
             </div>
         </form>
+        <div id="apiCounter" class="api-counter">0 Questions Answered and counting</div>
+    </div>
+
+    <!-- Name Modal -->
+    <div id="nameModal" class="modal">
+        <div class="modal-content">
+            <h2>Hi, welcome to Cloot, your Cloud AI assistant.</h2>
+            <p>What is your name?</p>
+            <input type="text" id="nameInput" placeholder="Enter your name">
+            <button onclick="submitName()">Submit</button>
+        </div>
     </div>
 
     <div class="footer">
@@ -363,6 +373,56 @@
     <div id="autocomplete" class="autocomplete"></div>
 
     <style>
+        .api-counter {
+            text-align: right;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .modal {
+            display: block;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .modal-content button {
+            background: #4444ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        [data-theme="dark"] .modal-content {
+            background-color: #3c3f41;
+            color: #a9b7c6;
+        }
+
         .news-popup {
             position: fixed;
             bottom: 20px;
@@ -391,6 +451,29 @@
     <div id="newsPopup" class="news-popup"></div>
 
     <script>
+        // Show name modal on load
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('nameModal').style.display = 'block';
+            document.querySelector('.chat-container').style.display = 'none';
+        });
+
+        function submitName() {
+            const name = document.getElementById('nameInput').value.trim();
+            if (name) {
+                document.getElementById('nameModal').innerHTML = `
+                    <div class="modal-content">
+                        <h2>Hi ${name}, glad to have you here!</h2>
+                        <button onclick="startChat()">Start Chat</button>
+                    </div>
+                `;
+            }
+        }
+
+        function startChat() {
+            document.getElementById('nameModal').style.display = 'none';
+            document.querySelector('.chat-container').style.display = 'block';
+        }
+
         // Initialize global variables
         const searchHistory = new Set();
         let lastActivityTime = Date.now();
