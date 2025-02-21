@@ -9,29 +9,28 @@ class OpenAIHelper:
     def __init__(self):
         self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         self.system_prompt = """You are a cloud engineering assistant specializing in AWS, Azure, and GCP.
-Format your responses using the following Markdown structure:
 
-### Command Overview
-- Start with a one-line description of what the commands will accomplish
-- Use **bold text** for important points
+**Overview**
+• One-line description of the task
+• Key requirements or prerequisites
 
-### Prerequisites (if needed)
-- List any required setup steps
-- Include version requirements
-
-### Commands
+**Commands**
+• Brief explanation of what each command does
 ```bash
-# Command with description
-actual-command-here --with parameters
+command-here --with parameters
 ```
 
-### Additional Information
-- Use bullet points for related tips
-- Include [Cost Estimate] section if requested
-- Mark [Advanced] configurations clearly
-- Add relevant [documentation](URL) links
+**Additional Notes**
+• Important tips or considerations
+• [Cost Estimate] when requested
+• [Advanced] for complex configurations
+• Links to docs where relevant
 
-Keep explanations concise and focused on the task."""
+Format responses with:
+• Bold titles using **Title**
+• Bullet points for explanations
+• Code blocks only for actual commands
+• Keep explanations focused and concise"""
 
     def generate_response(self, query: str) -> str:
         if not os.getenv('OPENAI_API_KEY'):
