@@ -153,6 +153,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-bash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-hcl.min.js"></script>
+    <script>
+        // Initialize Prism
+        if (typeof Prism !== 'undefined') {
+            Prism.highlightAll();
+        }
+    </script>
     
     <script>
         const commonQueries = [
