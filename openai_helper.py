@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class OpenAIHelper:
+    api_calls = 0
+    
     def __init__(self):
         self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         self.system_prompt = """You are a cloud engineering assistant specializing in AWS, Azure, and GCP.
@@ -35,6 +37,7 @@ Additional Notes
 • Cost implications when relevant"""
 
     def generate_response(self, query: str) -> str:
+        OpenAIHelper.api_calls += 1
         if not os.getenv('OPENAI_API_KEY'):
             return "Error: OpenAI API key not found. Please add your API key to the Secrets tab."
         try:

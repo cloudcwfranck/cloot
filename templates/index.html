@@ -328,6 +328,7 @@
         </div>
 
         <p class="description">
+            <span id="apiCounter">0 Questions Answered and counting</span><br>
             Welcome to Cloot – Your AI-Powered Cloud Assistant!
             As a cloud engineer, spending hours searching for the right commands slows you down. Cloot simplifies cloud management by generating accurate AWS, Azure, GCP CLI commands, Terraform scripts, and cost-saving recommendations—all in seconds.
         </p>
@@ -651,11 +652,12 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const data = await response.text();
+                const data = await response.json();
                 const endTime = performance.now();
+                document.getElementById('apiCounter').textContent = `${data.apiCalls} Questions Answered and counting`;
                 const executionTime = ((endTime - startTime) / 1000).toFixed(1);
 
-                responseArea.innerHTML = formatResponse(data);
+                responseArea.innerHTML = formatResponse(data.response);
                 document.getElementById('executionTime').innerHTML = `Generated in ${executionTime}s`;
 
                 // Generate a relevant tip
