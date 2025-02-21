@@ -367,15 +367,28 @@
     <div id="autocomplete" class="autocomplete"></div>
 
     <script>
-        // Initialize global variables
-        let searchHistory = new Set();
-        
+        // Initialize global variables and functions
+        const searchHistory = new Set();
+
         function initPrism() {
             if (typeof Prism === 'undefined') {
                 setTimeout(initPrism, 100);
                 return;
             }
             Prism.highlightAll();
+        }
+
+        function toggleTheme() {
+            document.body.setAttribute('data-theme', 
+                document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        }
+
+        function resetChat() {
+            document.getElementById('responseArea').innerHTML = '';
+            document.getElementById('executionTime').innerHTML = '';
+            document.getElementById('tips').innerHTML = '';
+            document.getElementById('queryInput').value = '';
+            searchHistory.clear();
         }
 
         const cloudCommands = [
@@ -388,13 +401,6 @@
             'Configure AWS Lambda',
             'Setup GCP Cloud Run'
         ];
-
-        function toggleTheme() {
-            document.body.setAttribute('data-theme', 
-                document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-        }
-
-        let searchHistory = new Set();
 
         function handleInput(event) {
             const input = event.target.value.toLowerCase();
@@ -519,7 +525,7 @@
             content.style.display = content.style.display === 'block' ? 'none' : 'block';
         }
 
-        async function handleSubmit(event) {
+        function handleSubmit(event) {
             event.preventDefault();
             const input = document.getElementById('queryInput');
             const responseArea = document.getElementById('responseArea');
