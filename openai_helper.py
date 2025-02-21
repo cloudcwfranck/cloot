@@ -12,6 +12,8 @@ class OpenAIHelper:
 Your task is to generate accurate, well-formatted, and executable cloud infrastructure commands."""
 
     def generate_response(self, query: str) -> str:
+        if not os.getenv('OPENAI_API_KEY'):
+            return "Error: OpenAI API key not found. Please add your API key to the Secrets tab."
         try:
             response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
@@ -24,4 +26,4 @@ Your task is to generate accurate, well-formatted, and executable cloud infrastr
             )
             return response.choices[0].message.content
         except Exception as e:
-            return f"Error generating response: {str(e)}"
+            return f"Error generating response: {str(e)}\nPlease verify your OpenAI API key is valid."
