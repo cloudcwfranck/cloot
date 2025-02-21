@@ -5,14 +5,9 @@ description = ""
 authors = ["Your Name <you@example.com>"]
 requires-python = ">=3.11"
 dependencies = [
-    "azure-identity>=1.20.0",
-    "boto3>=1.36.25",
     "flask>=3.1.0",
-    "google-auth>=2.38.0",
-    "google-cloud-billing>=1.16.1",
     "openai>=1.63.2",
     "python-dotenv>=1.0.1",
     "rich>=13.9.4",
-    "sift-stack-py>=0.3.3",
     "typer>=0.15.1",
 ]

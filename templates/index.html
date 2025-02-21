@@ -309,93 +309,6 @@
             border-radius: 4px;
             font-size: 14px;
         }
-        .deploy-button {
-            background-color: #4CAF50; /* Green */
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 30%;
-            min-width: 300px;
-        }
-        
-        .provider-buttons {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-            justify-content: center;
-        }
-        
-        .provider-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-        
-        .provider-btn:hover {
-            opacity: 0.9;
-        }
-        
-        .credentials-form {
-            margin-top: 20px;
-        }
-        
-        .credentials-form input,
-        .credentials-form textarea {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        .credentials-form textarea {
-            height: 100px;
-            resize: vertical;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -442,35 +355,6 @@
                 </button>
             </div>
         </form>
-        <div id="deploymentModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h3>Select Cloud Provider</h3>
-                <div class="provider-buttons">
-                    <button onclick="selectProvider('aws')" class="provider-btn">AWS</button>
-                    <button onclick="selectProvider('azure')" class="provider-btn">Azure</button>
-                    <button onclick="selectProvider('gcp')" class="provider-btn">GCP</button>
-                </div>
-                <div id="awsCredentials" class="credentials-form" style="display: none;">
-                    <h4>AWS Credentials</h4>
-                    <input type="text" id="awsAccessKey" placeholder="Access Key ID"><br><br>
-                    <input type="password" id="awsSecretKey" placeholder="Secret Access Key"><br><br>
-                    <button onclick="submitCredentials('aws')">Deploy to AWS</button>
-                </div>
-                <div id="azureCredentials" class="credentials-form" style="display: none;">
-                    <h4>Azure Credentials</h4>
-                    <input type="text" id="azureTenantId" placeholder="Tenant ID"><br><br>
-                    <input type="text" id="azureClientId" placeholder="Client ID"><br><br>
-                    <input type="password" id="azureClientSecret" placeholder="Client Secret"><br><br>
-                    <button onclick="submitCredentials('azure')">Deploy to Azure</button>
-                </div>
-                <div id="gcpCredentials" class="credentials-form" style="display: none;">
-                    <h4>GCP Credentials</h4>
-                    <textarea id="gcpKeyFile" placeholder="Service Account Key JSON"></textarea><br><br>
-                    <button onclick="submitCredentials('gcp')">Deploy to GCP</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="footer">
@@ -570,7 +454,6 @@
             let codeContent = '';
             let language = '';
             let currentResponse = '';
-            let hasCommand = false;
 
             sections.forEach(section => {
                 if (section.startsWith('```')) {
@@ -582,13 +465,11 @@
                         language = section.slice(3) || 'bash';
                         inCodeBlock = true;
                         codeContent = '';
-                        hasCommand = true; // Indicate presence of a command
                     } else {
                         html += `
                             <div class="code-block">
                                 <button class="copy-button" onclick="copyCode(this)">Copy</button>
                                 <pre><code class="language-${language}">${codeContent}</code></pre>
-                                ${hasCommand ? '<button class="deploy-button" onclick="openModal()">Deploy</button>' : ''}
                             </div>
                         `;
                         inCodeBlock = false;
@@ -686,125 +567,6 @@
             }
 
             input.value = '';
-        }
-
-        // Get the modal
-        var modal = document.getElementById("myModal");
-
-        // Get the button that opens the modal
-        // var btn = document.getElementById("myBtn");
-
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-
-        function openModal() {
-            document.getElementById('deploymentModal').style.display = "block";
-            hideAllCredentialForms();
-        }
-
-        function hideAllCredentialForms() {
-            document.getElementById('awsCredentials').style.display = "none";
-            document.getElementById('azureCredentials').style.display = "none";
-            document.getElementById('gcpCredentials').style.display = "none";
-        }
-
-        function selectProvider(provider) {
-            hideAllCredentialForms();
-            document.getElementById(`${provider}Credentials`).style.display = "block";
-        }
-
-        async function submitCredentials(provider) {
-            let credentials = {};
-            let deployCommand = currentDeployCommand;
-            
-            try {
-                switch(provider) {
-                    case 'aws':
-                        credentials = {
-                            accessKeyId: document.getElementById('awsAccessKey').value,
-                            secretAccessKey: document.getElementById('awsSecretKey').value,
-                            command: deployCommand
-                        };
-                        const awsResponse = await fetch('/auth/aws', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify(credentials)
-                        });
-                        if (!awsResponse.ok) throw new Error('AWS authentication failed');
-                        break;
-                        
-                    case 'azure':
-                        credentials = {
-                            tenantId: document.getElementById('azureTenantId').value,
-                            clientId: document.getElementById('azureClientId').value,
-                            clientSecret: document.getElementById('azureClientSecret').value,
-                            command: deployCommand
-                        };
-                        const azureResponse = await fetch('/auth/azure', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify(credentials)
-                        });
-                        if (!azureResponse.ok) throw new Error('Azure authentication failed');
-                        break;
-                        
-                    case 'gcp':
-                        credentials = {
-                            credentials: document.getElementById('gcpKeyFile').value,
-                            command: deployCommand
-                        };
-                        const gcpResponse = await fetch('/auth/gcp', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify(credentials)
-                        });
-                        if (!gcpResponse.ok) throw new Error('GCP authentication failed');
-                        break;
-                }
-                
-                // After successful authentication, deploy the command
-                const deployResponse = await fetch('/deploy', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        provider: provider,
-                        command: deployCommand
-                    })
-                });
-                
-                if (!deployResponse.ok) {
-                    throw new Error('Deployment failed');
-                }
-                
-                const result = await deployResponse.json();
-                alert('Deployment successful: ' + result.message);
-                
-            } catch (error) {
-                alert('Deployment failed: ' + error.message);
-            } finally {
-                document.getElementById('deploymentModal').style.display = "none";
-            }
-        }
-        
-        let currentDeployCommand = '';
-        
-        function openModal() {
-            const codeBlock = event.target.previousElementSibling;
-            currentDeployCommand = codeBlock.textContent.trim();
-            document.getElementById('deploymentModal').style.display = "block";
-            hideAllCredentialForms();
-        }
-
-        // When the user clicks on <span> (x), close the modal
-        document.querySelector('#deploymentModal .close').onclick = function() {
-            document.getElementById('deploymentModal').style.display = "none";
-        }
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('deploymentModal')) {
-                document.getElementById('deploymentModal').style.display = "none";
-            }
         }
     </script>
 </body>
