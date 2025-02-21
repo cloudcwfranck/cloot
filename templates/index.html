@@ -118,7 +118,36 @@
             margin: 16px 0;
             background: #f8f8f8;
             border-radius: 8px;
-            overflow: hidden;
+            overflow-x: auto;
+            max-height: 400px;
+        }
+        .ai-response {
+            background: #f8fbff;
+            padding: 16px;
+            border-radius: 12px;
+            border-left: 4px solid #4444ff;
+            margin: 16px 0;
+        }
+        .send-button {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #4444ff;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .send-button:hover {
+            background: #3333cc;
+            transform: translateY(-50%) scale(1.02);
         }
         .copy-button {
             position: absolute;
@@ -235,13 +264,18 @@
                 <input type="text" class="message-input" id="queryInput" 
                        placeholder="Ask about cloud infrastructure..."
                        oninput="handleInput(event)">
-                <button type="submit" class="send-button">Send</button>
+                <button type="submit" class="send-button">
+                    <span>Send</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
             </div>
         </form>
     </div>
     
     <div class="footer">
-        Powered by <a href="https://www.cloudcraftwithfranck.org/" target="_blank">CCWF</a>
+        Built with ❤️ by <a href="https://www.cloudcraftwithfranck.org/" target="_blank">CloudCraftWithFranck</a>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/prism.min.js"></script>
@@ -284,7 +318,24 @@
                 return;
             }
 
-            const matches = cloudCommands.filter(cmd => 
+            // Dynamic suggestions based on input
+            const allSuggestions = {
+                aws: ['Create EC2 instance', 'Configure AWS VPC', 'Setup AWS Lambda', 'S3 bucket policies'],
+                azure: ['Setup Azure VM', 'Create Azure Function', 'Configure Azure AD', 'AKS deployment'],
+                gcp: ['Deploy to GCP', 'Setup GCP Cloud Run', 'GCP Load Balancer', 'Cloud Functions'],
+                terraform: ['Terraform AWS setup', 'Azure Terraform config', 'GCP Terraform modules', 'Remote state'],
+                kubernetes: ['EKS setup', 'AKS deployment', 'GKE configuration', 'K8s best practices']
+            };
+
+            let relevantSuggestions = [];
+            if (input.includes('aws')) relevantSuggestions = allSuggestions.aws;
+            else if (input.includes('azure')) relevantSuggestions = allSuggestions.azure;
+            else if (input.includes('gcp')) relevantSuggestions = allSuggestions.gcp;
+            else if (input.includes('terraform')) relevantSuggestions = allSuggestions.terraform;
+            else if (input.includes('kubernetes')) relevantSuggestions = allSuggestions.kubernetes;
+            else relevantSuggestions = Object.values(allSuggestions).flat();
+
+            const matches = relevantSuggestions.filter(cmd => 
                 cmd.toLowerCase().includes(input)
             );
 
@@ -343,7 +394,7 @@
                     // Parse markdown-style links [text](url)
                     const parsedSection = section.replace(/\[([^\]]+)\]\(([^)]+)\)/g, 
                         '<a href="$2" target="_blank">$1</a>');
-                    html += `<p>${parsedSection}</p>`;
+                    html += `<div class="ai-response">${parsedSection}</div>`;
                 }
             });
             
