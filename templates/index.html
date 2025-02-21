@@ -188,6 +188,20 @@
         .autocomplete-item:hover {
             background: #f0f0f0;
         }
+        .execution-time {
+            font-size: 12px;
+            color: #666;
+            text-align: right;
+            margin-top: 8px;
+        }
+        .tips {
+            background: #f8f8ff;
+            border-left: 4px solid #4444ff;
+            padding: 12px;
+            margin: 16px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -206,6 +220,8 @@
         </p>
 
         <div class="response-area" id="responseArea"></div>
+        <div id="executionTime" class="execution-time"></div>
+        <div id="tips" class="tips"></div>
 
         <div class="suggestions">
             <button class="suggestion-pill" onclick="selectSuggestion('How does AWS EC2 auto-scaling work?')">AWS EC2 Auto-scaling</button>
@@ -324,7 +340,10 @@
                         </div>
                     `;
                 } else {
-                    html += `<p>${section}</p>`;
+                    // Parse markdown-style links [text](url)
+                    const parsedSection = section.replace(/\[([^\]]+)\]\(([^)]+)\)/g, 
+                        '<a href="$2" target="_blank">$1</a>');
+                    html += `<p>${parsedSection}</p>`;
                 }
             });
             
@@ -351,7 +370,8 @@
             
             if (!query.trim()) return;
             
-            responseArea.innerHTML = '<p>Generating response...</p>';
+            responseArea.innerHTML = '<p>Cloot is thinking...</p>';
+            const startTime = performance.now();
             
             try {
                 const response = await fetch('/ask', {
@@ -361,10 +381,28 @@
                 });
                 
                 const data = await response.text();
+                const endTime = performance.now();
+                const executionTime = ((endTime - startTime) / 1000).toFixed(1);
+                
                 responseArea.innerHTML = formatResponse(data);
-                initPrism(); // Use the new initPrism function
+                document.getElementById('executionTime').innerHTML = `Generated in ${executionTime}s`;
+                
+                // Generate a relevant tip
+                const tips = [
+                    "💡 You can use arrow keys to navigate through command history",
+                    "💡 Try clicking on the code blocks to copy them directly",
+                    "💡 Use the dark/light mode toggle for better visibility",
+                    "💡 Click on suggestion pills for quick command examples",
+                    "💡 Type a few characters to see command autocomplete"
+                ];
+                const randomTip = tips[Math.floor(Math.random() * tips.length)];
+                document.getElementById('tips').innerHTML = randomTip;
+                
+                initPrism();
             } catch (error) {
                 responseArea.innerHTML = `<p style="color: red">Error: ${error.message}</p>`;
+                document.getElementById('executionTime').innerHTML = '';
+                document.getElementById('tips').innerHTML = '';
             }
             
             input.value = '';
