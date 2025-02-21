@@ -1,13 +1,24 @@
 
 import typer
-from rich.console import Console
-from rich.panel import Panel
-from rich.markdown import Markdown
+from flask import Flask, render_template, request, jsonify
 from openai_helper import OpenAIHelper
 
-app = typer.Typer(help="CloudBot - Your AI Cloud Engineering Assistant")
-console = Console()
+app = Flask(__name__)
 ai_helper = OpenAIHelper()
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/ask', methods=['POST'])
+def ask_endpoint():
+    data = request.json
+    query = data.get('query', '')
+    response = ai_helper.generate_response(query)
+    return response
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
 
 @app.command()
 def ask(
