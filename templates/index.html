@@ -359,6 +359,7 @@
             <h2>Hi, welcome to Cloot, your Cloud AI assistant.</h2>
             <p>What is your name?</p>
             <input type="text" id="nameInput" placeholder="Enter your name">
+            <div id="nameError" class="error-message">Please enter your name</div>
             <button onclick="submitName()">Submit</button>
         </div>
     </div>
@@ -397,16 +398,22 @@
             padding: 20px;
             border-radius: 12px;
             width: 80%;
-            max-width: 500px;
+            max-width: 400px;
             text-align: center;
         }
 
         .modal-content input {
-            width: 100%;
+            width: calc(100% - 24px);
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 6px;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 5px;
+            display: none;
         }
 
         .modal-content button {
@@ -459,14 +466,18 @@
 
         function submitName() {
             const name = document.getElementById('nameInput').value.trim();
-            if (name) {
-                document.getElementById('nameModal').innerHTML = `
-                    <div class="modal-content">
-                        <h2>Hi ${name}, glad to have you here!</h2>
-                        <button onclick="startChat()">Start Chat</button>
-                    </div>
-                `;
+            const errorMsg = document.getElementById('nameError');
+            if (!name) {
+                errorMsg.style.display = 'block';
+                return;
             }
+            errorMsg.style.display = 'none';
+            document.getElementById('nameModal').innerHTML = `
+                <div class="modal-content">
+                    <h2>Hi ${name}, glad to have you here!</h2>
+                    <button onclick="startChat()">Start Chat</button>
+                </div>
+            `;
         }
 
         function startChat() {
