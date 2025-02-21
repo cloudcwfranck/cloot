@@ -322,6 +322,7 @@
             <h1 class="title">Cloot</h1>
             <div class="theme-controls">
                 <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer;">🌓</button>
+                <button onclick="resetChat()" style="background: none; border: none; cursor: pointer;">🔄</button>
                 <span>☁️</span>
             </div>
         </div>
@@ -567,6 +568,14 @@
             }
 
             input.value = '';
+        }
+
+        function resetChat() {
+            document.getElementById('responseArea').innerHTML = '';
+            document.getElementById('executionTime').innerHTML = '';
+            document.getElementById('tips').innerHTML = '';
+            document.getElementById('queryInput').value = '';
+            searchHistory.clear();
         }
     </script>
 </body>
