@@ -9,7 +9,13 @@ class OpenAIHelper:
     def __init__(self):
         self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         self.system_prompt = """You are a cloud engineering assistant specializing in AWS, Azure, and GCP.
-Your task is to generate accurate, well-formatted, and executable cloud infrastructure commands."""
+Your task is to generate accurate, well-formatted, and executable cloud infrastructure commands.
+Format your responses with the following structure:
+1. Numbered steps for implementation
+2. Code blocks with appropriate syntax highlighting (use ```terraform or ```bash)
+3. Cost estimates section marked with [Cost Estimate]
+4. Advanced configurations marked with [Advanced]
+5. Related best practices and troubleshooting tips"""
 
     def generate_response(self, query: str) -> str:
         if not os.getenv('OPENAI_API_KEY'):

@@ -2,28 +2,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CloudBot</title>
+    <title>CCWFCLI</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
         :root {
             --bg-color: #f5f5f5;
             --text-color: #000;
             --container-bg: #fff;
-            --code-bg: #f8f9fa;
+            --code-bg: #1e1e1e;
+            --suggestion-bg: #f0f0f0;
         }
         [data-theme="dark"] {
             --bg-color: #1a1a1a;
             --text-color: #fff;
             --container-bg: #2d2d2d;
-            --code-bg: #1e1e1e;
+            --suggestion-bg: #3d3d3d;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 40px auto;
             padding: 20px;
             background-color: var(--bg-color);
             color: var(--text-color);
-            transition: background-color 0.3s;
         }
         .chat-container {
             background: var(--container-bg);
@@ -33,61 +34,87 @@
         }
         .header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 15px;
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 1px solid #eee;
+        }
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
         }
         .message-input {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            margin-bottom: 10px;
             font-size: 14px;
             background: var(--container-bg);
             color: var(--text-color);
         }
-        .send-button {
-            background: #000;
+        .response-area {
+            margin: 20px 0;
+            font-family: 'Fira Code', monospace;
+        }
+        .code-block {
+            position: relative;
+            margin: 10px 0;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #4CAF50;
             color: white;
             border: none;
-            padding: 8px 20px;
+            padding: 5px 10px;
             border-radius: 4px;
             cursor: pointer;
-            float: right;
+            font-size: 12px;
         }
-        .response-area {
-            min-height: 300px;
-            margin: 20px 0;
-            padding: 10px;
-            background: var(--code-bg);
+        .expandable {
+            border: 1px solid #ddd;
             border-radius: 4px;
-            white-space: pre-wrap;
-            font-family: monospace;
+            margin: 10px 0;
+        }
+        .expandable-header {
+            padding: 10px;
+            background: var(--suggestion-bg);
+            cursor: pointer;
+        }
+        .expandable-content {
+            padding: 10px;
+            display: none;
+        }
+        .cost-estimate {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .suggestions-container {
+            position: absolute;
+            width: 100%;
+            background: var(--container-bg);
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        .suggestion-item {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .suggestion-item:hover {
+            background: var(--suggestion-bg);
         }
         .theme-switch {
             cursor: pointer;
             padding: 5px;
-        }
-        .suggested-questions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        .question-pill {
-            background: #f0f0f0;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            border: none;
-            transition: background-color 0.3s;
-        }
-        .question-pill:hover {
-            background: #e0e0e0;
         }
         .signature {
             text-align: center;
@@ -100,7 +127,8 @@
 <body>
     <div class="chat-container">
         <div class="header">
-            <h1>CloudBot</h1>
+            <img src="/attached_assets/CCWF logo.jpg" alt="CCWFCLI Logo" class="logo">
+            <h1>CCWFCLI</h1>
             <div>
                 <span class="theme-switch" onclick="toggleTheme()">🌓</span>
                 <span>☁️</span>
@@ -109,30 +137,107 @@
         <p>As an engineer, I usually find myself spending a lot of time googling, so I made this tool for IT engineers to help facilitate this process.</p>
         <div class="response-area" id="responseArea"></div>
         <form id="queryForm" onsubmit="return handleSubmit(event)">
-            <input type="text" class="message-input" id="queryInput" placeholder="Ask about cloud infrastructure...">
-            <button type="submit" class="send-button">Send</button>
+            <div style="position: relative;">
+                <input type="text" class="message-input" id="queryInput" 
+                       placeholder="Ask about cloud infrastructure..."
+                       oninput="handleInput(event)">
+                <div id="suggestions" class="suggestions-container"></div>
+            </div>
         </form>
-        <div class="suggested-questions">
-            <button class="question-pill" onclick="askQuestion('How to create an EC2 instance with Terraform?')">How to create an EC2 instance with Terraform?</button>
-            <button class="question-pill" onclick="askQuestion('Deploy a containerized app on Azure AKS')">Deploy a containerized app on Azure AKS</button>
-            <button class="question-pill" onclick="askQuestion('Setup a GCP Cloud Function')">Setup a GCP Cloud Function</button>
-            <button class="question-pill" onclick="askQuestion('Create an AWS Lambda function')">Create an AWS Lambda function</button>
-        </div>
         <div class="signature">
             <p>CloudCraftWithFranck</p>
             <a href="https://www.cloudcraftwithfranck.org/" target="_blank">Visit my website</a>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-hcl.min.js"></script>
+    
     <script>
+        const commonQueries = [
+            'How to create an EC2 instance with Terraform?',
+            'Deploy a containerized app on Azure AKS',
+            'Setup a GCP Cloud Function',
+            'Create an AWS Lambda function'
+        ];
+
         function toggleTheme() {
             document.body.setAttribute('data-theme', 
                 document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         }
 
-        function askQuestion(question) {
-            document.getElementById('queryInput').value = question;
+        function handleInput(event) {
+            const input = event.target.value.toLowerCase();
+            const suggestions = document.getElementById('suggestions');
+            
+            if (input.length < 2) {
+                suggestions.style.display = 'none';
+                return;
+            }
+
+            const filtered = commonQueries.filter(q => 
+                q.toLowerCase().includes(input)
+            );
+
+            suggestions.innerHTML = filtered.map(q => 
+                `<div class="suggestion-item" onclick="selectSuggestion('${q}')">${q}</div>`
+            ).join('');
+            
+            suggestions.style.display = filtered.length ? 'block' : 'none';
+        }
+
+        function selectSuggestion(query) {
+            document.getElementById('queryInput').value = query;
+            document.getElementById('suggestions').style.display = 'none';
             handleSubmit(new Event('submit'));
+        }
+
+        function formatResponse(response) {
+            // Split response into sections
+            const sections = response.split('---');
+            let html = '';
+            
+            sections.forEach(section => {
+                if (section.includes('```')) {
+                    const language = section.includes('terraform') ? 'hcl' : 'bash';
+                    html += `
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre><code class="language-${language}">${section.replace(/```[a-z]*\n/g, '').replace(/```/g, '')}</code></pre>
+                        </div>
+                    `;
+                } else if (section.includes('[Cost Estimate]')) {
+                    html += `<div class="cost-estimate">${section}</div>`;
+                } else if (section.includes('[Advanced]')) {
+                    const title = section.split('\n')[0];
+                    const content = section.split('\n').slice(1).join('\n');
+                    html += `
+                        <div class="expandable">
+                            <div class="expandable-header" onclick="toggleExpand(this)">
+                                ${title}
+                            </div>
+                            <div class="expandable-content">${content}</div>
+                        </div>
+                    `;
+                } else {
+                    html += `<p>${section}</p>`;
+                }
+            });
+            
+            return html;
+        }
+
+        function copyCode(button) {
+            const code = button.nextElementSibling.textContent;
+            navigator.clipboard.writeText(code);
+            button.textContent = 'Copied!';
+            setTimeout(() => button.textContent = 'Copy', 2000);
+        }
+
+        function toggleExpand(header) {
+            const content = header.nextElementSibling;
+            content.style.display = content.style.display === 'block' ? 'none' : 'block';
         }
 
         async function handleSubmit(event) {
@@ -150,7 +255,8 @@
                     body: JSON.stringify({query: query})
                 });
                 const data = await response.text();
-                responseArea.innerHTML = '```\n' + data + '\n```';
+                responseArea.innerHTML = formatResponse(data);
+                Prism.highlightAll();
             } catch (error) {
                 responseArea.innerHTML = 'Error: ' + error;
             }
