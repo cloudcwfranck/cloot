@@ -373,6 +373,8 @@
         let lastActivityTime = Date.now();
         let newsTimeout;
         let allSuggestionPills = [];
+        const responseArea = document.getElementById('responseArea');
+        const input = document.getElementById('queryInput');
         const cloudCommands = [
             'Create EC2 instance',
             'Setup Azure VM',
@@ -747,21 +749,19 @@
         // Initialize when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
             fetchSuggestions();
-            document.getElementById('queryInput').addEventListener('input', handleInput);
+            const queryInput = document.getElementById('queryInput');
+            if (queryInput) {
+                queryInput.addEventListener('input', handleInput);
+            }
             updateSuggestionPills();
             initPrism();
+            
+            // Create news popup div
+            const newsPopupDiv = document.createElement('div');
+            newsPopupDiv.id = 'newsPopup';
+            newsPopupDiv.className = 'news-popup';
+            document.body.appendChild(newsPopupDiv);
         });
-
-        const cloudCommands = [
-            'Create EC2 instance',
-            'Setup Azure VM',
-            'Deploy to GCP',
-            'Configure AWS VPC',
-            'Setup Kubernetes cluster',
-            'Create Azure Function',
-            'Configure AWS Lambda',
-            'Setup GCP Cloud Run'
-        ];
 
         function handleInput(event) {
             const input = event.target.value.toLowerCase();
