@@ -5,6 +5,37 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/themes/prism.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
+        @keyframes float {
+            0% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-20px) translateX(10px); }
+            100% { transform: translateY(0px) translateX(0px); }
+        }
+
+        .cloud {
+            position: fixed;
+            opacity: 0.1;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .cloud:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation: float 8s infinite;
+        }
+
+        .cloud:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            animation: float 10s infinite;
+        }
+
+        .cloud:nth-child(3) {
+            top: 30%;
+            right: 30%;
+            animation: float 12s infinite;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
@@ -15,6 +46,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow-x: hidden;
+            position: relative;
         }
         .footer {
             text-align: center;
@@ -250,6 +283,9 @@
     </style>
 </head>
 <body>
+    <div class="cloud">☁️</div>
+    <div class="cloud">☁️</div>
+    <div class="cloud">☁️</div>
     <div class="chat-container">
         <div class="header">
             <h1 class="title">Cloot</h1>
