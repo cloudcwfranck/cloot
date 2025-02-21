@@ -309,6 +309,54 @@
             border-radius: 4px;
             font-size: 14px;
         }
+        .deploy-button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -355,6 +403,15 @@
                 </button>
             </div>
         </form>
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p>Please enter your credentials:</p>
+                <input type="text" id="username" placeholder="Username"><br><br>
+                <input type="password" id="password" placeholder="Password"><br><br>
+                <button id="submitCredentials">Submit</button>
+            </div>
+        </div>
     </div>
 
     <div class="footer">
@@ -454,6 +511,7 @@
             let codeContent = '';
             let language = '';
             let currentResponse = '';
+            let hasCommand = false;
 
             sections.forEach(section => {
                 if (section.startsWith('```')) {
@@ -465,11 +523,13 @@
                         language = section.slice(3) || 'bash';
                         inCodeBlock = true;
                         codeContent = '';
+                        hasCommand = true; // Indicate presence of a command
                     } else {
                         html += `
                             <div class="code-block">
                                 <button class="copy-button" onclick="copyCode(this)">Copy</button>
                                 <pre><code class="language-${language}">${codeContent}</code></pre>
+                                ${hasCommand ? '<button class="deploy-button" onclick="openModal()">Deploy</button>' : ''}
                             </div>
                         `;
                         inCodeBlock = false;
@@ -568,6 +628,39 @@
 
             input.value = '';
         }
+
+        // Get the modal
+        var modal = document.getElementById("myModal");
+
+        // Get the button that opens the modal
+        // var btn = document.getElementById("myBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        function openModal() {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        document.getElementById('submitCredentials').addEventListener('click', function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            // Here you would handle the submission of credentials, e.g., sending to a server
+            alert('Username: ' + username + ', Password: ' + password);
+            modal.style.display = "none";
+        });
     </script>
 </body>
 </html>
