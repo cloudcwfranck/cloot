@@ -370,11 +370,6 @@
     <script>
         // Initialize global variables
         const searchHistory = new Set();
-        let lastActivityTime = Date.now();
-        let newsTimeout;
-        let allSuggestionPills = [];
-        const responseArea = document.getElementById('responseArea');
-        const input = document.getElementById('queryInput');
         const cloudCommands = [
             'Create EC2 instance',
             'Setup Azure VM',
@@ -591,10 +586,6 @@
             searchHistory.clear();
         }
 
-        let allSuggestionPills = [];
-        const responseArea = document.getElementById('responseArea');
-        const input = document.getElementById('queryInput');
-
         async function fetchSuggestions() {
             try {
                 const response = await fetch('/suggestions');
@@ -806,10 +797,6 @@
         // Refresh suggestions every 2 minutes
         setInterval(fetchSuggestions, 120000);
 
-        //Added a news popup div
-        const newsPopupDiv = document.createElement('div');
-        newsPopupDiv.id = 'newsPopup';
-        document.body.appendChild(newsPopupDiv);
-    </script>
+        </script>
 </body>
 </html>
