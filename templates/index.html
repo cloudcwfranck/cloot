@@ -335,12 +335,7 @@
         <div class="response-area" id="responseArea"></div>
         <div id="executionTime" class="execution-time"></div>
 
-        <div class="suggestions">
-            <button class="suggestion-pill" onclick="selectSuggestion('How does AWS EC2 auto-scaling work?')">AWS EC2 Auto-scaling</button>
-            <button class="suggestion-pill" onclick="selectSuggestion('Azure AKS vs EKS comparison')">Azure AKS vs EKS</button>
-            <button class="suggestion-pill" onclick="selectSuggestion('GCP Cloud Run setup')">GCP Cloud Run</button>
-            <button class="suggestion-pill" onclick="selectSuggestion('Terraform best practices')">Terraform Best Practices</button>
-        </div>
+        <div class="suggestions" id="rotatingPills"></div>
 
         <form id="queryForm" onsubmit="return handleSubmit(event)">
             <div class="input-container">
@@ -685,9 +680,35 @@
         }
 
         // Initialize when DOM is ready
+        const allSuggestionPills = [
+            { text: 'AWS EC2 Auto-scaling', query: 'How does AWS EC2 auto-scaling work?' },
+            { text: 'Azure AKS vs EKS', query: 'Azure AKS vs EKS comparison' },
+            { text: 'GCP Cloud Run', query: 'GCP Cloud Run setup' },
+            { text: 'Terraform Best Practices', query: 'Terraform best practices' },
+            { text: 'AWS Lambda Functions', query: 'How to create AWS Lambda functions?' },
+            { text: 'Azure Container Apps', query: 'Guide to Azure Container Apps' },
+            { text: 'GCP Kubernetes Engine', query: 'GCP GKE best practices' },
+            { text: 'Cloud Cost Optimization', query: 'How to optimize cloud costs?' }
+        ];
+
+        function getRandomPills(array, count) {
+            const shuffled = [...array].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function updateSuggestionPills() {
+            const pillsContainer = document.getElementById('rotatingPills');
+            const selectedPills = getRandomPills(allSuggestionPills, 4);
+            
+            pillsContainer.innerHTML = selectedPills
+                .map(pill => `<button class="suggestion-pill" onclick="selectSuggestion('${pill.query}')">${pill.text}</button>`)
+                .join('');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('queryForm').addEventListener('submit', handleSubmit);
             document.getElementById('queryInput').addEventListener('input', handleInput);
+            updateSuggestionPills();
             initPrism();
         });
     </script>
