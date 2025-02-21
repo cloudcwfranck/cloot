@@ -713,48 +713,86 @@
             document.getElementById(`${provider}Credentials`).style.display = "block";
         }
 
-        function submitCredentials(provider) {
+        async function submitCredentials(provider) {
             let credentials = {};
+            let deployCommand = currentDeployCommand;
             
-            switch(provider) {
-                case 'aws':
-                    credentials = {
-                        accessKeyId: document.getElementById('awsAccessKey').value,
-                        secretAccessKey: document.getElementById('awsSecretKey').value
-                    };
-                    fetch('/auth/aws', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(credentials)
-                    });
-                    break;
-                    
-                case 'azure':
-                    credentials = {
-                        tenantId: document.getElementById('azureTenantId').value,
-                        clientId: document.getElementById('azureClientId').value,
-                        clientSecret: document.getElementById('azureClientSecret').value
-                    };
-                    fetch('/auth/azure', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(credentials)
-                    });
-                    break;
-                    
-                case 'gcp':
-                    credentials = {
-                        credentials: document.getElementById('gcpKeyFile').value
-                    };
-                    fetch('/auth/gcp', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(credentials)
-                    });
-                    break;
+            try {
+                switch(provider) {
+                    case 'aws':
+                        credentials = {
+                            accessKeyId: document.getElementById('awsAccessKey').value,
+                            secretAccessKey: document.getElementById('awsSecretKey').value,
+                            command: deployCommand
+                        };
+                        const awsResponse = await fetch('/auth/aws', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(credentials)
+                        });
+                        if (!awsResponse.ok) throw new Error('AWS authentication failed');
+                        break;
+                        
+                    case 'azure':
+                        credentials = {
+                            tenantId: document.getElementById('azureTenantId').value,
+                            clientId: document.getElementById('azureClientId').value,
+                            clientSecret: document.getElementById('azureClientSecret').value,
+                            command: deployCommand
+                        };
+                        const azureResponse = await fetch('/auth/azure', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(credentials)
+                        });
+                        if (!azureResponse.ok) throw new Error('Azure authentication failed');
+                        break;
+                        
+                    case 'gcp':
+                        credentials = {
+                            credentials: document.getElementById('gcpKeyFile').value,
+                            command: deployCommand
+                        };
+                        const gcpResponse = await fetch('/auth/gcp', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(credentials)
+                        });
+                        if (!gcpResponse.ok) throw new Error('GCP authentication failed');
+                        break;
+                }
+                
+                // After successful authentication, deploy the command
+                const deployResponse = await fetch('/deploy', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        provider: provider,
+                        command: deployCommand
+                    })
+                });
+                
+                if (!deployResponse.ok) {
+                    throw new Error('Deployment failed');
+                }
+                
+                const result = await deployResponse.json();
+                alert('Deployment successful: ' + result.message);
+                
+            } catch (error) {
+                alert('Deployment failed: ' + error.message);
+            } finally {
+                document.getElementById('deploymentModal').style.display = "none";
             }
-            
-            document.getElementById('deploymentModal').style.display = "none";
+        }
+        
+        let currentDeployCommand = '';
+        
+        function openModal() {
+            const codeBlock = event.target.previousElementSibling;
+            currentDeployCommand = codeBlock.textContent.trim();
+            document.getElementById('deploymentModal').style.display = "block";
+            hideAllCredentialForms();
         }
 
         // When the user clicks on <span> (x), close the modal

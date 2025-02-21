@@ -24,9 +24,33 @@ def auth_aws():
     data = request.json
     result = cloud_manager.authenticate_aws(
         data.get('access_key'),
-        data.get('secret_key')
+        data.get('secret_key'),
+        data.get('command')
     )
-    return jsonify({'success': result is True, 'error': result if isinstance(result, str) else None})
+    return jsonify({'success': isinstance(result, dict), 'result': result})
+
+@app.route('/deploy', methods=['POST'])
+def deploy():
+    data = request.json
+    provider = data.get('provider')
+    command = data.get('command')
+    
+    if not provider or not command:
+        return jsonify({'error': 'Missing provider or command'}), 400
+        
+    try:
+        if provider == 'aws':
+            result = cloud_manager.deploy_aws(command)
+        elif provider == 'azure':
+            result = cloud_manager.deploy_azure(command)
+        elif provider == 'gcp':
+            result = cloud_manager.deploy_gcp(command)
+        else:
+            return jsonify({'error': 'Invalid provider'}), 400
+            
+        return jsonify({'message': 'Deployment successful', 'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/auth/azure', methods=['POST'])
 def auth_azure():

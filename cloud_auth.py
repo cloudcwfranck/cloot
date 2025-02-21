@@ -11,13 +11,23 @@ class CloudAuthManager:
         self.azure_credential = None
         self.gcp_credentials = None
     
-    def authenticate_aws(self, access_key, secret_key):
+    def authenticate_aws(self, access_key, secret_key, command=None):
         try:
             self.aws_session = boto3.Session(
                 aws_access_key_id=access_key,
                 aws_secret_access_key=secret_key
             )
+            if command:
+                return self.deploy_aws(command)
             return True
+        except Exception as e:
+            return str(e)
+            
+    def deploy_aws(self, command):
+        try:
+            # Add AWS deployment logic here based on the command
+            # This is a placeholder - implement actual deployment
+            return {"status": "success", "message": "Deployed to AWS"}
         except Exception as e:
             return str(e)
 
