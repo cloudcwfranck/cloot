@@ -321,9 +321,9 @@
         <div class="header">
             <h1 class="title">Cloot</h1>
             <div class="theme-controls">
-                <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; font-size: 24px;">🌓</button>
-                <button onclick="resetChat()" style="background: none; border: none; cursor: pointer; font-size: 24px;">🔄</button>
-                <span style="font-size: 24px;">☁️</span>
+                <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer;">🌓</button>
+                <button onclick="resetChat()" style="background: none; border: none; cursor: pointer;">🔄</button>
+                <span>☁️</span>
             </div>
         </div>
 
@@ -334,6 +334,7 @@
 
         <div class="response-area" id="responseArea"></div>
         <div id="executionTime" class="execution-time"></div>
+        <div id="tips" class="tips"></div>
 
         <div class="suggestions">
             <button class="suggestion-pill" onclick="selectSuggestion('How does AWS EC2 auto-scaling work?')">AWS EC2 Auto-scaling</button>
@@ -367,9 +368,7 @@
     <div id="autocomplete" class="autocomplete"></div>
 
     <script>
-        // Initialize global variables and functions
-        const searchHistory = new Set();
-
+        // Wait for Prism to be loaded
         function initPrism() {
             if (typeof Prism === 'undefined') {
                 setTimeout(initPrism, 100);
@@ -378,18 +377,7 @@
             Prism.highlightAll();
         }
 
-        function toggleTheme() {
-            document.body.setAttribute('data-theme', 
-                document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-        }
-
-        function resetChat() {
-            document.getElementById('responseArea').innerHTML = '';
-            document.getElementById('executionTime').innerHTML = '';
-            document.getElementById('tips').innerHTML = '';
-            document.getElementById('queryInput').value = '';
-            searchHistory.clear();
-        }
+        document.addEventListener('DOMContentLoaded', initPrism);
 
         const cloudCommands = [
             'Create EC2 instance',
@@ -401,6 +389,13 @@
             'Configure AWS Lambda',
             'Setup GCP Cloud Run'
         ];
+
+        function toggleTheme() {
+            document.body.setAttribute('data-theme', 
+                document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        }
+
+        let searchHistory = new Set();
 
         function handleInput(event) {
             const input = event.target.value.toLowerCase();
@@ -525,7 +520,7 @@
             content.style.display = content.style.display === 'block' ? 'none' : 'block';
         }
 
-        function handleSubmit(event) {
+        async function handleSubmit(event) {
             event.preventDefault();
             const input = document.getElementById('queryInput');
             const responseArea = document.getElementById('responseArea');
@@ -575,12 +570,13 @@
             input.value = '';
         }
 
-        // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('queryForm').addEventListener('submit', handleSubmit);
-            document.getElementById('queryInput').addEventListener('input', handleInput);
-            initPrism();
-        });
+        function resetChat() {
+            document.getElementById('responseArea').innerHTML = '';
+            document.getElementById('executionTime').innerHTML = '';
+            document.getElementById('tips').innerHTML = '';
+            document.getElementById('queryInput').value = '';
+            searchHistory.clear();
+        }
     </script>
 </body>
 </html>
