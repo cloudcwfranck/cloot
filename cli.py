@@ -2,9 +2,11 @@
 import typer
 from flask import Flask, render_template, request, jsonify
 from openai_helper import OpenAIHelper
+from cloud_auth import CloudAuthManager
 
 app = Flask(__name__)
 ai_helper = OpenAIHelper()
+cloud_manager = CloudAuthManager()
 
 @app.route('/')
 def home():
@@ -16,6 +18,36 @@ def ask_endpoint():
     query = data.get('query', '')
     response = ai_helper.generate_response(query)
     return response
+
+@app.route('/auth/aws', methods=['POST'])
+def auth_aws():
+    data = request.json
+    result = cloud_manager.authenticate_aws(
+        data.get('access_key'),
+        data.get('secret_key')
+    )
+    return jsonify({'success': result is True, 'error': result if isinstance(result, str) else None})
+
+@app.route('/auth/azure', methods=['POST'])
+def auth_azure():
+    data = request.json
+    result = cloud_manager.authenticate_azure(
+        data.get('tenant_id'),
+        data.get('client_id'),
+        data.get('client_secret')
+    )
+    return jsonify({'success': result is True, 'error': result if isinstance(result, str) else None})
+
+@app.route('/auth/gcp', methods=['POST'])
+def auth_gcp():
+    data = request.json
+    result = cloud_manager.authenticate_gcp(data.get('credentials'))
+    return jsonify({'success': result is True, 'error': result if isinstance(result, str) else None})
+
+@app.route('/costs', methods=['GET'])
+def get_costs():
+    insights = cloud_manager.get_cost_insights()
+    return jsonify(insights)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
