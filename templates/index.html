@@ -445,7 +445,7 @@
                 </div>
             `;
             newsPopup.style.display = 'block';
-            
+
             setTimeout(() => {
                 newsPopup.style.display = 'none';
             }, 15000); // Extended to 15 seconds (10s read + 5s original)
@@ -468,7 +468,7 @@
 
         // Initial timer
         resetActivityTimer();
-        
+
         // Initialize tips div
         const tipsDiv = document.createElement('div');
         tipsDiv.id = 'tips';
@@ -679,7 +679,7 @@
             input.value = '';
         }
 
-        // Initialize when DOM is ready
+        // Initialize suggestion pills array and update function - moved to top level
         const allSuggestionPills = [
             { text: 'AWS EC2 Auto-scaling', query: 'How does AWS EC2 auto-scaling work?' },
             { text: 'Azure AKS vs EKS', query: 'Azure AKS vs EKS comparison' },
@@ -699,11 +699,12 @@
         function updateSuggestionPills() {
             const pillsContainer = document.getElementById('rotatingPills');
             const selectedPills = getRandomPills(allSuggestionPills, 4);
-            
+
             pillsContainer.innerHTML = selectedPills
                 .map(pill => `<button class="suggestion-pill" onclick="selectSuggestion('${pill.query}')">${pill.text}</button>`)
                 .join('');
         }
+
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('queryForm').addEventListener('submit', handleSubmit);
