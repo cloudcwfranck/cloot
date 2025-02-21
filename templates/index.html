@@ -281,6 +281,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-bash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/components/prism-hcl.min.js"></script>
+    <div id="autocomplete" class="autocomplete"></div>
+    
     <script>
         // Wait for Prism to be loaded
         function initPrism() {
@@ -309,11 +311,13 @@
                 document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         }
 
+        let searchHistory = new Set();
+
         function handleInput(event) {
             const input = event.target.value.toLowerCase();
             const autocomplete = document.getElementById('autocomplete');
             
-            if (input.length < 2) {
+            if (!input || input.length < 2) {
                 autocomplete.style.display = 'none';
                 return;
             }
@@ -350,9 +354,13 @@
         }
 
         function selectSuggestion(query) {
-            document.getElementById('queryInput').value = query;
+            const inputElement = document.getElementById('queryInput');
+            inputElement.value = query;
             document.getElementById('autocomplete').style.display = 'none';
-            handleSubmit(new Event('submit'));
+            searchHistory.add(query.toLowerCase());
+            // Create a new submit event
+            const event = new Event('submit', {cancelable: true});
+            document.getElementById('queryForm').dispatchEvent(event);
         }
 
         function formatResponse(response) {
@@ -412,9 +420,6 @@
             if (currentResponse.trim()) {
                 html += `<div class="ai-response">${currentResponse}</div>`;
             }
-            
-            return html;
-        }
             
             return html;
         }
