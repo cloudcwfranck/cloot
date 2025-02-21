@@ -362,10 +362,15 @@
             let inCodeBlock = false;
             let codeContent = '';
             let language = '';
+            let currentResponse = '';
             
             sections.forEach(section => {
                 if (section.startsWith('```')) {
                     if (!inCodeBlock) {
+                        if (currentResponse.trim()) {
+                            html += `<div class="ai-response">${currentResponse}</div>`;
+                            currentResponse = '';
+                        }
                         language = section.slice(3) || 'bash';
                         inCodeBlock = true;
                         codeContent = '';
@@ -381,9 +386,16 @@
                 } else if (inCodeBlock) {
                     codeContent += section + '\n';
                 } else if (section.includes('[Cost Estimate]')) {
+                    if (currentResponse.trim()) {
+                        html += `<div class="ai-response">${currentResponse}</div>`;
+                        currentResponse = '';
+                    }
                     html += `<div class="cost-estimate">${section}</div>`;
                 } else if (section.includes('[Advanced]')) {
-                    const title = section;
+                    if (currentResponse.trim()) {
+                        html += `<div class="ai-response">${currentResponse}</div>`;
+                        currentResponse = '';
+                    }
                     html += `
                         <div class="expandable">
                             <div class="expandable-header" onclick="toggleExpand(this)">${title}</div>
@@ -391,12 +403,18 @@
                         </div>
                     `;
                 } else {
-                    // Parse markdown-style links [text](url)
                     const parsedSection = section.replace(/\[([^\]]+)\]\(([^)]+)\)/g, 
                         '<a href="$2" target="_blank">$1</a>');
-                    html += `<div class="ai-response">${parsedSection}</div>`;
+                    currentResponse += parsedSection + '<br>';
                 }
             });
+            
+            if (currentResponse.trim()) {
+                html += `<div class="ai-response">${currentResponse}</div>`;
+            }
+            
+            return html;
+        }
             
             return html;
         }
