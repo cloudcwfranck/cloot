@@ -2,6 +2,7 @@
 import typer
 from flask import Flask, render_template, request, jsonify
 from openai_helper import OpenAIHelper
+from forum_scraper import scrape_suggestions
 
 app = Flask(__name__)
 ai_helper = OpenAIHelper()
@@ -11,6 +12,14 @@ def home():
     return render_template('index.html')
 
 @app.route('/ask', methods=['POST'])
+
+
+@app.route('/suggestions')
+def get_suggestions():
+    suggestions = scrape_suggestions()
+    return jsonify(suggestions)
+
+
 def ask_endpoint():
     data = request.json
     query = data.get('query', '')

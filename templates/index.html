@@ -680,16 +680,23 @@
         }
 
         // Initialize when DOM is ready
-        const allSuggestionPills = [
-            { text: 'AWS EC2 Auto-scaling', query: 'How does AWS EC2 auto-scaling work?' },
-            { text: 'Azure AKS vs EKS', query: 'Azure AKS vs EKS comparison' },
-            { text: 'GCP Cloud Run', query: 'GCP Cloud Run setup' },
-            { text: 'Terraform Best Practices', query: 'Terraform best practices' },
-            { text: 'AWS Lambda Functions', query: 'How to create AWS Lambda functions?' },
-            { text: 'Azure Container Apps', query: 'Guide to Azure Container Apps' },
-            { text: 'GCP Kubernetes Engine', query: 'GCP GKE best practices' },
-            { text: 'Cloud Cost Optimization', query: 'How to optimize cloud costs?' }
-        ];
+        let allSuggestionPills = [];
+
+async function fetchSuggestions() {
+    try {
+        const response = await fetch('/suggestions');
+        const suggestions = await response.json();
+        allSuggestionPills = suggestions;
+        updateSuggestionPills();
+    } catch (error) {
+        console.error('Error fetching suggestions:', error);
+    }
+}
+
+// Fetch suggestions on page load
+fetchSuggestions();
+// Refresh suggestions every 5 minutes
+setInterval(fetchSuggestions, 300000);
 
         function getRandomPills(array, count) {
             const shuffled = [...array].sort(() => 0.5 - Math.random());
