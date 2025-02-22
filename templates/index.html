@@ -277,19 +277,17 @@
             border-left-color: #cc7832;
         }
         .autocomplete {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
+            position: fixed;
             background: white;
             border: 1px solid #eee;
             border-radius: 12px;
-            margin-top: 8px;
+            margin-top: 4px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             display: none;
             padding: 8px 0;
             max-height: 300px;
             overflow-y: auto;
+            z-index: 1000;
         }
         .autocomplete-item {
             padding: 12px 16px;
@@ -630,36 +628,43 @@
         function handleInput(event) {
             const input = event.target.value.toLowerCase();
             const autocomplete = document.getElementById('autocomplete');
-
+            
             if (!input) {
                 autocomplete.style.display = 'none';
                 return;
             }
 
             const commonPhrases = [
-                'can you help me with AWS Lambda functions?',
-                'can you explain Azure Container Apps?',
-                'can you show me how to deploy to GCP?',
-                'can you help me optimize cloud costs?',
-                'can you guide me through Kubernetes setup?',
-                'can you explain cloud security best practices?',
-                'can you help me with terraform configuration?',
-                'can you show me how to set up auto-scaling?'
+                'Help me with AWS Lambda functions',
+                'Explain Azure Container Apps',
+                'Show me how to deploy to GCP',
+                'Help me optimize cloud costs',
+                'Guide me through Kubernetes setup',
+                'Explain cloud security best practices',
+                'Help me with terraform configuration',
+                'Show me how to set up auto-scaling',
+                'Create an EC2 instance',
+                'Configure AWS VPC',
+                'Setup Azure Functions'
             ];
 
             const matches = commonPhrases
                 .filter(phrase => phrase.toLowerCase().includes(input))
+                .slice(0, 5)  // Limit to 5 suggestions
                 .map(phrase => {
                     const index = phrase.toLowerCase().indexOf(input);
-                    const highlighted = phrase.substring(0, index) +
-                        `<span class="highlight">${phrase.substring(index, index + input.length)}</span>` +
-                        phrase.substring(index + input.length);
-                    return `<div class="autocomplete-item">${highlighted}</div>`;
+                    return `<div class="autocomplete-item" onclick="selectSuggestion('${phrase}')">${phrase}</div>`;
                 });
 
             if (matches.length) {
                 autocomplete.innerHTML = matches.join('');
                 autocomplete.style.display = 'block';
+                
+                // Position the autocomplete dropdown
+                const inputRect = event.target.getBoundingClientRect();
+                autocomplete.style.top = `${inputRect.bottom + window.scrollY}px`;
+                autocomplete.style.left = `${inputRect.left + window.scrollX}px`;
+                autocomplete.style.width = `${inputRect.width}px`;
             } else {
                 autocomplete.style.display = 'none';
             }
