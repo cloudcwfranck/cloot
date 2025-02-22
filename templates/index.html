@@ -152,6 +152,34 @@
         .input-container {
             position: relative;
             margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .file-upload-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .file-button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        .file-button:hover {
+            background: #f0f0f0;
+        }
+        #fileName {
+            font-size: 12px;
+            color: #666;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .message-input {
             width: 100%;
@@ -363,6 +391,13 @@
 
         <form id="queryForm" onsubmit="return handleSubmit(event)">
             <div class="input-container">
+                <div class="file-upload-container">
+                    <input type="file" id="fileInput" style="display: none;">
+                    <button type="button" onclick="document.getElementById('fileInput').click()" class="file-button">
+                        📎
+                    </button>
+                    <span id="fileName"></span>
+                </div>
                 <input type="text" class="message-input" id="queryInput" 
                        placeholder="Ask about cloud infrastructure..."
                        oninput="handleInput(event)">
@@ -773,6 +808,8 @@
             const input = document.getElementById('queryInput');
             const responseArea = document.getElementById('responseArea');
             const query = input.value;
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
 
             if (!query.trim()) return;
 
@@ -780,10 +817,15 @@
             const startTime = performance.now();
 
             try {
+                const formData = new FormData();
+                formData.append('query', query);
+                if (file) {
+                    formData.append('file', file);
+                }
+
                 const response = await fetch('/ask', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({query})
+                    body: formData
                 });
 
                 if (!response.ok) {
@@ -849,6 +891,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('queryForm').addEventListener('submit', handleSubmit);
             document.getElementById('queryInput').addEventListener('input', handleInput);
+            document.getElementById('fileInput').addEventListener('change', function(e) {
+                const fileName = e.target.files[0]?.name || '';
+                document.getElementById('fileName').textContent = fileName;
+            });
 
             // Add click handlers for autocomplete items
             document.getElementById('autocomplete').addEventListener('click', function(e) {

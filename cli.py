@@ -12,9 +12,14 @@ def home():
 
 @app.route('/ask', methods=['POST'])
 def ask_endpoint():
-    data = request.json
-    query = data.get('query', '')
-    response = ai_helper.generate_response(query)
+    query = request.form.get('query', '')
+    file = request.files.get('file')
+    
+    file_content = None
+    if file:
+        file_content = file.read().decode('utf-8')
+    
+    response = ai_helper.generate_response(query, file_content)
     return jsonify({
         'response': response,
         'apiCalls': ai_helper.api_calls

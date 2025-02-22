@@ -52,18 +52,22 @@ Additional Notes
 • Best practices and recommendations
 • Cost implications when relevant"""
 
-    def generate_response(self, query: str) -> str:
+    def generate_response(self, query: str, file_content: str = None) -> str:
         self.api_calls += 1
         self.save_counter()
         if not os.getenv('OPENAI_API_KEY'):
             return "Error: OpenAI API key not found. Please add your API key to the Secrets tab."
         try:
+            messages = [{"role": "system", "content": self.system_prompt}]
+            
+            if file_content:
+                messages.append({"role": "user", "content": f"Here is the content of the uploaded file:\n\n{file_content}\n\nQuery: {query}"})
+            else:
+                messages.append({"role": "user", "content": query})
+                
             response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": self.system_prompt},
-                    {"role": "user", "content": query}
-                ],
+                messages=messages,
                 temperature=0.7,
                 max_tokens=500
             )
