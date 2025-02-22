@@ -19,11 +19,14 @@ def ask_endpoint():
     if file:
         file_content = file.read().decode('utf-8')
     
-    response = ai_helper.generate_response(query, file_content)
-    return jsonify({
-        'response': response,
-        'apiCalls': ai_helper.api_calls
-    })
+    try:
+        response = ai_helper.generate_response(query, file_content)
+        return jsonify({
+            'response': response,
+            'apiCalls': ai_helper.api_calls
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
