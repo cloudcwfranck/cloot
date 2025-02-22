@@ -29,12 +29,13 @@ class OpenAIHelper:
             json.dump({'count': self.api_calls}, f)
 
     def generate_response(self, query: str, file_content: str = None) -> str:
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key or api_key == 'your-api-key-here':
+            return "Error: Please set your OpenAI API key in the Secrets tab with the key 'OPENAI_API_KEY'"
+        
         self.api_calls += 1
         self.save_counter()
         
-        if not os.getenv('OPENAI_API_KEY'):
-            return "Error: OpenAI API key not found. Please add your API key to the Secrets tab."
-            
         try:
             # Base system prompt
             system_prompt = """You are a cloud engineering assistant specializing in AWS, Azure, and GCP. 
