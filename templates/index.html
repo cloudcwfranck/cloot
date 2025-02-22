@@ -635,24 +635,39 @@
             }
 
             const commonPhrases = [
-                'Help me with AWS Lambda functions',
-                'Explain Azure Container Apps',
-                'Show me how to deploy to GCP',
-                'Help me optimize cloud costs',
-                'Guide me through Kubernetes setup',
-                'Explain cloud security best practices',
-                'Help me with terraform configuration',
-                'Show me how to set up auto-scaling',
-                'Create an EC2 instance',
-                'Configure AWS VPC',
-                'Setup Azure Functions'
+                'How to set up AWS Lambda functions',
+                'How to deploy to Azure Container Apps',
+                'How to deploy applications to GCP',
+                'How to optimize cloud costs',
+                'How to configure Kubernetes cluster',
+                'How to implement cloud security best practices',
+                'How to write terraform configuration',
+                'How to set up auto-scaling in AWS',
+                'How to create an EC2 instance',
+                'How to configure AWS VPC',
+                'How to setup Azure Functions',
+                'What is the difference between EC2 and Lambda',
+                'What are the best practices for cloud security',
+                'What is container orchestration',
+                'Can you explain cloud native architecture',
+                'Can you help with Docker containerization',
+                'Can you show me how to use AWS CLI',
+                'Guide me through AWS S3 bucket setup',
+                'Guide me through Azure DevOps pipeline',
+                'Explain microservices architecture',
+                'Explain serverless computing',
+                'Create a simple Lambda function',
+                'Create a Docker container'
             ];
 
             const matches = commonPhrases
-                .filter(phrase => phrase.toLowerCase().includes(input))
+                .filter(phrase => {
+                    // Get the first few words of input for better matching
+                    const inputWords = input.split(' ').slice(0, 3).join(' ');
+                    return phrase.toLowerCase().startsWith(inputWords);
+                })
                 .slice(0, 5)  // Limit to 5 suggestions
                 .map(phrase => {
-                    const index = phrase.toLowerCase().indexOf(input);
                     return `<div class="autocomplete-item" onclick="selectSuggestion('${phrase}')">${phrase}</div>`;
                 });
 
