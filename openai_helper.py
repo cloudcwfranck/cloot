@@ -8,12 +8,18 @@ load_dotenv()
 
 class OpenAIHelper:
     def __init__(self):
-        api_key = os.getenv('OPENAI_API_KEY')
-        if not api_key:
-            raise ValueError("OpenAI API key not found. Please set the OPENAI_API_KEY environment variable.")
-        self.client = OpenAI(api_key=api_key)
+        self.client = None
         self.counter_file = 'question_counter.json'
         self.load_counter()
+        self.initialize_client()
+    
+    def initialize_client(self):
+        api_key = os.getenv('OPENAI_API_KEY')
+        if api_key and api_key != 'your-api-key-here':
+            try:
+                self.client = OpenAI(api_key=api_key)
+            except Exception as e:
+                print(f"Error initializing OpenAI client: {str(e)}")
     
     def load_counter(self):
         if os.path.exists(self.counter_file):
@@ -29,10 +35,11 @@ class OpenAIHelper:
             json.dump({'count': self.api_calls}, f)
 
     def generate_response(self, query: str, file_content: str = None) -> str:
-        api_key = os.getenv('OPENAI_API_KEY')
-        if not api_key or api_key == 'your-api-key-here':
-            return "Error: Please set your OpenAI API key in the Secrets tab with the key 'OPENAI_API_KEY'"
-        
+        if not self.client:
+            self.initialize_client()
+            if not self.client:
+                return "Error: OpenAI API key not found or invalid. Please add a valid API key in the Secrets tab with the name 'OPENAI_API_KEY'"
+
         self.api_calls += 1
         self.save_counter()
         
