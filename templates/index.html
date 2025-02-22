@@ -307,8 +307,9 @@
             color: #4444ff;
             font-weight: 500;
         }
-        .autocomplete-item:hover {
+        .autocomplete-item:hover, .autocomplete-item.selected {
             background: #f8f9ff;
+            cursor: pointer;
         }
         [data-theme="dark"] .autocomplete {
             background: #2b2b2b;
@@ -828,6 +829,39 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('queryForm').addEventListener('submit', handleSubmit);
             document.getElementById('queryInput').addEventListener('input', handleInput);
+
+            // Add click handlers for autocomplete items
+            document.getElementById('autocomplete').addEventListener('click', function(e) {
+                if (e.target.classList.contains('autocomplete-item')) {
+                    selectSuggestion(e.target.textContent);
+                }
+            });
+
+            // Add keyboard navigation for autocomplete
+            document.getElementById('queryInput').addEventListener('keydown', function(e) {
+                const autocomplete = document.getElementById('autocomplete');
+                const items = autocomplete.getElementsByClassName('autocomplete-item');
+
+                if (autocomplete.style.display === 'none') return;
+
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    let selected = autocomplete.querySelector('.selected');
+                    if (!selected) {
+                        items[e.key === 'ArrowDown' ? 0 : items.length - 1].classList.add('selected');
+                    } else {
+                        let nextIndex = Array.from(items).indexOf(selected) + (e.key === 'ArrowDown' ? 1 : -1);
+                        if (nextIndex >= 0 && nextIndex < items.length) {
+                            selected.classList.remove('selected');
+                            items[nextIndex].classList.add('selected');
+                        }
+                    }
+                } else if (e.key === 'Enter' && autocomplete.querySelector('.selected')) {
+                    e.preventDefault();
+                    selectSuggestion(autocomplete.querySelector('.selected').textContent);
+                }
+            });
+
             updateSuggestionPills();
             initPrism();
         });
