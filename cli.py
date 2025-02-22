@@ -15,7 +15,7 @@ def ask_endpoint():
     data = request.json
     query = data.get('query', '')
     response = ai_helper.generate_response(query)
-    return response
+    return jsonify({'response': response})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
