@@ -277,23 +277,47 @@
             border-left-color: #cc7832;
         }
         .autocomplete {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
+            position: fixed;
             background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            border: 1px solid #eee;
+            border-radius: 12px;
             margin-top: 4px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             display: none;
+            padding: 8px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
         }
         .autocomplete-item {
-            padding: 8px 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #333;
+        }
+        .autocomplete-item:before {
+            content: "🔍";
+            opacity: 0.5;
+        }
+        .autocomplete-item .highlight {
+            color: #4444ff;
+            font-weight: 500;
+        }
+        .autocomplete-item:hover, .autocomplete-item.selected {
+            background: #f8f9ff;
             cursor: pointer;
         }
-        .autocomplete-item:hover {
-            background: #f0f0f0;
+        [data-theme="dark"] .autocomplete {
+            background: #2b2b2b;
+            border-color: #323232;
+        }
+        [data-theme="dark"] .autocomplete-item {
+            color: #a9b7c6;
+        }
+        [data-theme="dark"] .autocomplete-item:hover {
+            background: #323232;
         }
         .execution-time {
             font-size: 12px;
@@ -350,6 +374,18 @@
                 </button>
             </div>
         </form>
+        <div id="apiCounter" class="api-counter">0 Questions Answered and counting</div>
+    </div>
+
+    <!-- Name Modal -->
+    <div id="nameModal" class="modal">
+        <div class="modal-content">
+            <h2>Hi, welcome to Cloot, your Cloud AI assistant.</h2>
+            <p>What is your name?</p>
+            <input type="text" id="nameInput" placeholder="Enter your name">
+            <div id="nameError" class="error-message">Please enter your name</div>
+            <button onclick="submitName()">Submit</button>
+        </div>
     </div>
 
     <div class="footer">
@@ -362,6 +398,62 @@
     <div id="autocomplete" class="autocomplete"></div>
 
     <style>
+        .api-counter {
+            text-align: right;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .modal {
+            display: block;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal-content input {
+            width: calc(100% - 24px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .modal-content button {
+            background: #4444ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        [data-theme="dark"] .modal-content {
+            background-color: #3c3f41;
+            color: #a9b7c6;
+        }
+
         .news-popup {
             position: fixed;
             bottom: 20px;
@@ -390,6 +482,33 @@
     <div id="newsPopup" class="news-popup"></div>
 
     <script>
+        // Show name modal on load
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('nameModal').style.display = 'block';
+            document.querySelector('.chat-container').style.display = 'none';
+        });
+
+        function submitName() {
+            const name = document.getElementById('nameInput').value.trim();
+            const errorMsg = document.getElementById('nameError');
+            if (!name) {
+                errorMsg.style.display = 'block';
+                return;
+            }
+            errorMsg.style.display = 'none';
+            document.getElementById('nameModal').innerHTML = `
+                <div class="modal-content">
+                    <h2>Hi ${name}, glad to have you here!</h2>
+                    <button onclick="startChat()">Start Chat</button>
+                </div>
+            `;
+        }
+
+        function startChat() {
+            document.getElementById('nameModal').style.display = 'none';
+            document.querySelector('.chat-container').style.display = 'block';
+        }
+
         // Initialize global variables
         const searchHistory = new Set();
         let lastActivityTime = Date.now();
@@ -510,34 +629,57 @@
             const input = event.target.value.toLowerCase();
             const autocomplete = document.getElementById('autocomplete');
             
-            if (!input || input.length < 2) {
+            if (!input) {
                 autocomplete.style.display = 'none';
                 return;
             }
 
-            const suggestions = [
-                'Create EC2 instance', 'Configure AWS VPC', 'Setup AWS Lambda', 'S3 bucket policies',
-                'Setup Azure VM', 'Create Azure Function', 'Configure Azure AD', 'AKS deployment',
-                'Deploy to GCP', 'Setup GCP Cloud Run', 'GCP Load Balancer', 'Cloud Functions',
-                'Terraform AWS setup', 'Azure Terraform config', 'GCP Terraform modules', 'Remote state',
-                'EKS setup', 'AKS deployment', 'GKE configuration', 'K8s best practices',
-                'Cost optimization tips', 'Security best practices', 'High availability setup',
-                'Disaster recovery plan', 'CI/CD pipeline setup', 'Monitoring configuration'
+            const commonPhrases = [
+                'How to set up AWS Lambda functions',
+                'How to deploy to Azure Container Apps',
+                'How to deploy applications to GCP',
+                'How to optimize cloud costs',
+                'How to configure Kubernetes cluster',
+                'How to implement cloud security best practices',
+                'How to write terraform configuration',
+                'How to set up auto-scaling in AWS',
+                'How to create an EC2 instance',
+                'How to configure AWS VPC',
+                'How to setup Azure Functions',
+                'What is the difference between EC2 and Lambda',
+                'What are the best practices for cloud security',
+                'What is container orchestration',
+                'Can you explain cloud native architecture',
+                'Can you help with Docker containerization',
+                'Can you show me how to use AWS CLI',
+                'Guide me through AWS S3 bucket setup',
+                'Guide me through Azure DevOps pipeline',
+                'Explain microservices architecture',
+                'Explain serverless computing',
+                'Create a simple Lambda function',
+                'Create a Docker container'
             ];
 
-            const matches = suggestions.filter(suggestion => 
-                suggestion.toLowerCase().includes(input)
-            );
-
-            const matches = relevantSuggestions.filter(cmd => 
-                cmd.toLowerCase().includes(input)
-            );
+            const matches = commonPhrases
+                .filter(phrase => {
+                    // Get the first few words of input for better matching
+                    const inputWords = input.split(' ').slice(0, 3).join(' ');
+                    return phrase.toLowerCase().startsWith(inputWords);
+                })
+                .slice(0, 5)  // Limit to 5 suggestions
+                .map(phrase => {
+                    return `<div class="autocomplete-item" onclick="selectSuggestion('${phrase}')">${phrase}</div>`;
+                });
 
             if (matches.length) {
-                autocomplete.innerHTML = matches
-                    .map(cmd => `<div class="autocomplete-item" onclick="selectSuggestion('${cmd}')">${cmd}</div>`)
-                    .join('');
+                autocomplete.innerHTML = matches.join('');
                 autocomplete.style.display = 'block';
+                
+                // Position the autocomplete dropdown
+                const inputRect = event.target.getBoundingClientRect();
+                autocomplete.style.top = `${inputRect.bottom + window.scrollY}px`;
+                autocomplete.style.left = `${inputRect.left + window.scrollX}px`;
+                autocomplete.style.width = `${inputRect.width}px`;
             } else {
                 autocomplete.style.display = 'none';
             }
@@ -648,11 +790,12 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const data = await response.text();
+                const data = await response.json();
                 const endTime = performance.now();
+                document.getElementById('apiCounter').textContent = `${data.apiCalls} Questions Answered and counting`;
                 const executionTime = ((endTime - startTime) / 1000).toFixed(1);
 
-                responseArea.innerHTML = formatResponse(data);
+                responseArea.innerHTML = formatResponse(data.response);
                 document.getElementById('executionTime').innerHTML = `Generated in ${executionTime}s`;
 
                 // Generate a relevant tip
@@ -706,6 +849,39 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('queryForm').addEventListener('submit', handleSubmit);
             document.getElementById('queryInput').addEventListener('input', handleInput);
+
+            // Add click handlers for autocomplete items
+            document.getElementById('autocomplete').addEventListener('click', function(e) {
+                if (e.target.classList.contains('autocomplete-item')) {
+                    selectSuggestion(e.target.textContent);
+                }
+            });
+
+            // Add keyboard navigation for autocomplete
+            document.getElementById('queryInput').addEventListener('keydown', function(e) {
+                const autocomplete = document.getElementById('autocomplete');
+                const items = autocomplete.getElementsByClassName('autocomplete-item');
+
+                if (autocomplete.style.display === 'none') return;
+
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    let selected = autocomplete.querySelector('.selected');
+                    if (!selected) {
+                        items[e.key === 'ArrowDown' ? 0 : items.length - 1].classList.add('selected');
+                    } else {
+                        let nextIndex = Array.from(items).indexOf(selected) + (e.key === 'ArrowDown' ? 1 : -1);
+                        if (nextIndex >= 0 && nextIndex < items.length) {
+                            selected.classList.remove('selected');
+                            items[nextIndex].classList.add('selected');
+                        }
+                    }
+                } else if (e.key === 'Enter' && autocomplete.querySelector('.selected')) {
+                    e.preventDefault();
+                    selectSuggestion(autocomplete.querySelector('.selected').textContent);
+                }
+            });
+
             updateSuggestionPills();
             initPrism();
         });
