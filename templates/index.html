@@ -282,18 +282,43 @@
             left: 0;
             right: 0;
             background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-top: 4px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
+            border-radius: 12px;
+            margin-top: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             display: none;
+            padding: 8px 0;
+            max-height: 300px;
+            overflow-y: auto;
         }
         .autocomplete-item {
-            padding: 8px 12px;
+            padding: 12px 16px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #333;
+        }
+        .autocomplete-item:before {
+            content: "🔍";
+            opacity: 0.5;
+        }
+        .autocomplete-item .highlight {
+            color: #4444ff;
+            font-weight: 500;
         }
         .autocomplete-item:hover {
-            background: #f0f0f0;
+            background: #f8f9ff;
+        }
+        [data-theme="dark"] .autocomplete {
+            background: #2b2b2b;
+            border-color: #323232;
+        }
+        [data-theme="dark"] .autocomplete-item {
+            color: #a9b7c6;
+        }
+        [data-theme="dark"] .autocomplete-item:hover {
+            background: #323232;
         }
         .execution-time {
             font-size: 12px;
@@ -605,36 +630,34 @@
             const input = event.target.value.toLowerCase();
             const autocomplete = document.getElementById('autocomplete');
 
-            if (!input || input.length < 2) {
+            if (!input) {
                 autocomplete.style.display = 'none';
                 return;
             }
 
-            // Dynamic suggestions based on input
-            const allSuggestions = {
-                aws: ['Create EC2 instance', 'Configure AWS VPC', 'Setup AWS Lambda', 'S3 bucket policies'],
-                azure: ['Setup Azure VM', 'Create Azure Function', 'Configure Azure AD', 'AKS deployment'],
-                gcp: ['Deploy to GCP', 'Setup GCP Cloud Run', 'GCP Load Balancer', 'Cloud Functions'],
-                terraform: ['Terraform AWS setup', 'Azure Terraform config', 'GCP Terraform modules', 'Remote state'],
-                kubernetes: ['EKS setup', 'AKS deployment', 'GKE configuration', 'K8s best practices']
-            };
+            const commonPhrases = [
+                'can you help me with AWS Lambda functions?',
+                'can you explain Azure Container Apps?',
+                'can you show me how to deploy to GCP?',
+                'can you help me optimize cloud costs?',
+                'can you guide me through Kubernetes setup?',
+                'can you explain cloud security best practices?',
+                'can you help me with terraform configuration?',
+                'can you show me how to set up auto-scaling?'
+            ];
 
-            let relevantSuggestions = [];
-            if (input.includes('aws')) relevantSuggestions = allSuggestions.aws;
-            else if (input.includes('azure')) relevantSuggestions = allSuggestions.azure;
-            else if (input.includes('gcp')) relevantSuggestions = allSuggestions.gcp;
-            else if (input.includes('terraform')) relevantSuggestions = allSuggestions.terraform;
-            else if (input.includes('kubernetes')) relevantSuggestions = allSuggestions.kubernetes;
-            else relevantSuggestions = Object.values(allSuggestions).flat();
-
-            const matches = relevantSuggestions.filter(cmd => 
-                cmd.toLowerCase().includes(input)
-            );
+            const matches = commonPhrases
+                .filter(phrase => phrase.toLowerCase().includes(input))
+                .map(phrase => {
+                    const index = phrase.toLowerCase().indexOf(input);
+                    const highlighted = phrase.substring(0, index) +
+                        `<span class="highlight">${phrase.substring(index, index + input.length)}</span>` +
+                        phrase.substring(index + input.length);
+                    return `<div class="autocomplete-item">${highlighted}</div>`;
+                });
 
             if (matches.length) {
-                autocomplete.innerHTML = matches
-                    .map(cmd => `<div class="autocomplete-item" onclick="selectSuggestion('${cmd}')">${cmd}</div>`)
-                    .join('');
+                autocomplete.innerHTML = matches.join('');
                 autocomplete.style.display = 'block';
             } else {
                 autocomplete.style.display = 'none';
