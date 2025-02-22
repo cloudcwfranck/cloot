@@ -2,24 +2,17 @@
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
-import json
 
 load_dotenv()
 
+import json
+import os.path
+
 class OpenAIHelper:
     def __init__(self):
-        self.client = None
+        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         self.counter_file = 'question_counter.json'
         self.load_counter()
-        self.initialize_client()
-    
-    def initialize_client(self):
-        api_key = os.getenv('OPENAI_API_KEY')
-        if api_key and api_key != 'your-api-key-here':
-            try:
-                self.client = OpenAI(api_key=api_key)
-            except Exception as e:
-                print(f"Error initializing OpenAI client: {str(e)}")
     
     def load_counter(self):
         if os.path.exists(self.counter_file):
@@ -33,62 +26,46 @@ class OpenAIHelper:
     def save_counter(self):
         with open(self.counter_file, 'w') as f:
             json.dump({'count': self.api_calls}, f)
+        self.system_prompt = """You are a cloud engineering assistant specializing in AWS, Azure, and GCP.
+Format your responses with clear headings (not using markdown) and clean bullet points like this:
 
-    def generate_response(self, query: str, file_content: str = None) -> str:
-        if not self.client:
-            self.initialize_client()
-            if not self.client:
-                return "Error: OpenAI API key not found or invalid. Please add a valid API key in the Secrets tab with the name 'OPENAI_API_KEY'"
+Overview
+A clear, single-paragraph description of the topic or service.
 
-        self.api_calls += 1
-        self.save_counter()
-        
-        try:
-            # Base system prompt
-            system_prompt = """You are a cloud engineering assistant specializing in AWS, Azure, and GCP. 
-When analyzing files, first examine the content and then provide insights based on the query.
-Format your responses with clear sections:
+Key Requirements
+• List key prerequisites and requirements
+• Each point should be clear and concise
 
-ANALYSIS (if file provided)
-• Brief analysis of the provided file
-• Key points and structure identified
+How It Works
+• Detailed explanation points
+• Step-by-step process details
+• Each point should be self-contained
 
-RESPONSE
-• Direct answer to the query
-• Relevant examples or suggestions
-• Step-by-step instructions if needed
-
-CODE (if applicable)
-```language
-code-snippets-here
+Commands
+```bash
+command-here --with-parameters
+additional-commands --if-needed
 ```
 
-RECOMMENDATIONS
-• Best practices
-• Potential improvements
-• Important considerations"""
+Additional Notes
+• Important considerations to keep in mind
+• Best practices and recommendations
+• Cost implications when relevant"""
 
-            messages = [{"role": "system", "content": system_prompt}]
-            
-            if file_content:
-                # Create a more detailed prompt that includes file analysis
-                user_prompt = f"""FILE CONTENT:
-{file_content}
-
-USER QUERY:
-{query}
-
-Please analyze the file content and provide a response that addresses the query while considering the file's content."""
-            else:
-                user_prompt = query
-
-            messages.append({"role": "user", "content": user_prompt})
-                
+    def generate_response(self, query: str) -> str:
+        self.api_calls += 1
+        self.save_counter()
+        if not os.getenv('OPENAI_API_KEY'):
+            return "Error: OpenAI API key not found. Please add your API key to the Secrets tab."
+        try:
             response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
-                messages=messages,
+                messages=[
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": query}
+                ],
                 temperature=0.7,
-                max_tokens=800  # Increased to accommodate file analysis
+                max_tokens=500
             )
             return response.choices[0].message.content
         except Exception as e:
