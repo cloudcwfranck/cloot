@@ -509,28 +509,25 @@
         function handleInput(event) {
             const input = event.target.value.toLowerCase();
             const autocomplete = document.getElementById('autocomplete');
-
+            
             if (!input || input.length < 2) {
                 autocomplete.style.display = 'none';
                 return;
             }
 
-            // Dynamic suggestions based on input
-            const allSuggestions = {
-                aws: ['Create EC2 instance', 'Configure AWS VPC', 'Setup AWS Lambda', 'S3 bucket policies'],
-                azure: ['Setup Azure VM', 'Create Azure Function', 'Configure Azure AD', 'AKS deployment'],
-                gcp: ['Deploy to GCP', 'Setup GCP Cloud Run', 'GCP Load Balancer', 'Cloud Functions'],
-                terraform: ['Terraform AWS setup', 'Azure Terraform config', 'GCP Terraform modules', 'Remote state'],
-                kubernetes: ['EKS setup', 'AKS deployment', 'GKE configuration', 'K8s best practices']
-            };
+            const suggestions = [
+                'Create EC2 instance', 'Configure AWS VPC', 'Setup AWS Lambda', 'S3 bucket policies',
+                'Setup Azure VM', 'Create Azure Function', 'Configure Azure AD', 'AKS deployment',
+                'Deploy to GCP', 'Setup GCP Cloud Run', 'GCP Load Balancer', 'Cloud Functions',
+                'Terraform AWS setup', 'Azure Terraform config', 'GCP Terraform modules', 'Remote state',
+                'EKS setup', 'AKS deployment', 'GKE configuration', 'K8s best practices',
+                'Cost optimization tips', 'Security best practices', 'High availability setup',
+                'Disaster recovery plan', 'CI/CD pipeline setup', 'Monitoring configuration'
+            ];
 
-            let relevantSuggestions = [];
-            if (input.includes('aws')) relevantSuggestions = allSuggestions.aws;
-            else if (input.includes('azure')) relevantSuggestions = allSuggestions.azure;
-            else if (input.includes('gcp')) relevantSuggestions = allSuggestions.gcp;
-            else if (input.includes('terraform')) relevantSuggestions = allSuggestions.terraform;
-            else if (input.includes('kubernetes')) relevantSuggestions = allSuggestions.kubernetes;
-            else relevantSuggestions = Object.values(allSuggestions).flat();
+            const matches = suggestions.filter(suggestion => 
+                suggestion.toLowerCase().includes(input)
+            );
 
             const matches = relevantSuggestions.filter(cmd => 
                 cmd.toLowerCase().includes(input)
