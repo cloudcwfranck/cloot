@@ -2,11 +2,16 @@
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
+import json
+import os.path
+from openai.types.error import APIError
 
 load_dotenv()
 
-import json
-import os.path
+if not os.getenv('OPENAI_API_KEY'):
+    raise ValueError("OPENAI_API_KEY environment variable is not set")
+
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 class OpenAIHelper:
     def __init__(self):
