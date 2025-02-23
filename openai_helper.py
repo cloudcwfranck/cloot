@@ -68,6 +68,8 @@ Additional Notes
                 
             try:
                 print(f"Making API call with key starting with: {api_key[:5]}...")
+                print("Creating chat completion with query:", query)
+                
                 response = self.client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[
@@ -77,13 +79,31 @@ Additional Notes
                     temperature=0.7,
                     max_tokens=500
                 )
-                if not response or not response.choices:
-                    print("Empty response from OpenAI")
-                    return "Error: Empty response from OpenAI API"
+                
+                print("Response received from OpenAI")
+                if not response:
+                    print("Response object is None")
+                    return "Error: No response received from OpenAI API"
+                    
+                if not hasattr(response, 'choices'):
+                    print("Response has no choices attribute:", response)
+                    return "Error: Invalid response format from OpenAI API"
+                    
+                if not response.choices:
+                    print("Response choices is empty")
+                    return "Error: Empty choices in OpenAI API response"
+                    
                 return response.choices[0].message.content
+                
             except Exception as api_error:
-                print(f"OpenAI API error: {str(api_error)}")
-                return f"Error: OpenAI API request failed: {str(api_error)}"
+                error_msg = str(api_error)
+                print(f"OpenAI API error details: {error_msg}")
+                if "invalid_api_key" in error_msg.lower():
+                    return "Error: Invalid API key. Please check your OpenAI API key in the Secrets tab."
+                elif "rate_limit" in error_msg.lower():
+                    return "Error: Rate limit exceeded. Please try again in a few moments."
+                else:
+                    return f"Error: OpenAI API request failed: {error_msg}"
                 
         except Exception as e:
             print(f"General error in generate_response: {str(e)}")
