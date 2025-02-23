@@ -78,12 +78,6 @@ def ask_endpoint():
         'apiCalls': ai_helper.api_calls
     })
 
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
-
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
