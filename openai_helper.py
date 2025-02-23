@@ -70,30 +70,23 @@ Additional Notes
                 print(f"Making API call with key starting with: {api_key[:5]}...")
                 print("Creating chat completion with query:", query)
                 
+                messages = [
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": query}
+                ]
+                
                 response = self.client.chat.completions.create(
                     model="gpt-3.5-turbo",
-                    messages=[
-                        {"role": "system", "content": self.system_prompt},
-                        {"role": "user", "content": query}
-                    ],
+                    messages=messages,
                     temperature=0.7,
-                    max_tokens=500
+                    max_tokens=1000
                 )
                 
                 print("Response received from OpenAI")
-                if not response:
-                    print("Response object is None")
-                    return "Error: No response received from OpenAI API"
+                if hasattr(response.choices[0].message, 'content'):
+                    return response.choices[0].message.content
                     
-                if not hasattr(response, 'choices'):
-                    print("Response has no choices attribute:", response)
-                    return "Error: Invalid response format from OpenAI API"
-                    
-                if not response.choices:
-                    print("Response choices is empty")
-                    return "Error: Empty choices in OpenAI API response"
-                    
-                return response.choices[0].message.content
+                return "Error: Could not extract response content"
                 
             except Exception as api_error:
                 error_msg = str(api_error)
