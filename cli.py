@@ -79,6 +79,23 @@ def ask_endpoint():
             return jsonify({'error': 'No query provided'}), 400
             
         query = data.get('query', '')
+        print(f"Processing query: {query}")
+        
+        response = ai_helper.generate_response(query)
+        print(f"AI Response: {response}")
+        
+        if response.startswith('Error:'):
+            print(f"Error in response: {response}")
+            return jsonify({'error': response}), 500
+            
+        return jsonify({
+            'response': response,
+            'apiCalls': ai_helper.api_calls
+        })
+            
+    except Exception as e:
+        print(f"Unexpected error in ask_endpoint: {str(e)}")
+        return jsonify({'error': str(e)}), 500
         if not query.strip():
             return jsonify({'error': 'Empty query'}), 400
         
