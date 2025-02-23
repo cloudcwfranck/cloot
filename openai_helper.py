@@ -53,20 +53,34 @@ Additional Notes
 • Cost implications when relevant"""
 
     def generate_response(self, query: str) -> str:
-        self.api_calls += 1
-        self.save_counter()
-        if not os.getenv('OPENAI_API_KEY'):
-            return "Error: OpenAI API key not found. Please add your API key to the Secrets tab."
         try:
-            response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": self.system_prompt},
-                    {"role": "user", "content": query}
-                ],
-                temperature=0.7,
-                max_tokens=500
-            )
-            return response.choices[0].message.content
+            self.api_calls += 1
+            self.save_counter()
+            api_key = os.getenv('OPENAI_API_KEY')
+            
+            if not api_key:
+                print("OpenAI API key not found in environment")
+                return "Error: OpenAI API key not found. Please add your API key to the Secrets tab."
+                
+            if not api_key.startswith('sk-'):
+                print("Invalid API key format")
+                return "Error: Invalid OpenAI API key format. API key should start with 'sk-'"
+                
+            try:
+                response = self.client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": self.system_prompt},
+                        {"role": "user", "content": query}
+                    ],
+                    temperature=0.7,
+                    max_tokens=500
+                )
+                return response.choices[0].message.content
+            except Exception as api_error:
+                print(f"OpenAI API error: {str(api_error)}")
+                return f"Error: OpenAI API request failed: {str(api_error)}"
+                
         except Exception as e:
-            return f"Error generating response: {str(e)}\nPlease verify your OpenAI API key is valid."
+            print(f"General error in generate_response: {str(e)}")
+            return f"Error: An unexpected error occurred: {str(e)}"
