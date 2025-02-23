@@ -67,6 +67,7 @@ Additional Notes
                 return "Error: Invalid OpenAI API key format. API key should start with 'sk-'"
                 
             try:
+                print(f"Making API call with key starting with: {api_key[:5]}...")
                 response = self.client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[
@@ -76,6 +77,9 @@ Additional Notes
                     temperature=0.7,
                     max_tokens=500
                 )
+                if not response or not response.choices:
+                    print("Empty response from OpenAI")
+                    return "Error: Empty response from OpenAI API"
                 return response.choices[0].message.content
             except Exception as api_error:
                 print(f"OpenAI API error: {str(api_error)}")
