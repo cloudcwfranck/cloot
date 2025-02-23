@@ -13,19 +13,6 @@ class OpenAIHelper:
         self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         self.counter_file = 'question_counter.json'
         self.load_counter()
-    
-    def load_counter(self):
-        if os.path.exists(self.counter_file):
-            with open(self.counter_file, 'r') as f:
-                data = json.load(f)
-                self.api_calls = data.get('count', 0)
-        else:
-            self.api_calls = 0
-            self.save_counter()
-    
-    def save_counter(self):
-        with open(self.counter_file, 'w') as f:
-            json.dump({'count': self.api_calls}, f)
         self.system_prompt = """You are a cloud engineering assistant specializing in AWS, Azure, and GCP.
 Format your responses with clear headings (not using markdown) and clean bullet points like this:
 
@@ -51,6 +38,19 @@ Additional Notes
 • Important considerations to keep in mind
 • Best practices and recommendations
 • Cost implications when relevant"""
+    
+    def load_counter(self):
+        if os.path.exists(self.counter_file):
+            with open(self.counter_file, 'r') as f:
+                data = json.load(f)
+                self.api_calls = data.get('count', 0)
+        else:
+            self.api_calls = 0
+            self.save_counter()
+    
+    def save_counter(self):
+        with open(self.counter_file, 'w') as f:
+            json.dump({'count': self.api_calls}, f)
 
     def generate_response(self, query: str) -> str:
         try:
