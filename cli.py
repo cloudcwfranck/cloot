@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from openai_helper import OpenAIHelper
-from models import db, User
+from models import db, User, Question
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
