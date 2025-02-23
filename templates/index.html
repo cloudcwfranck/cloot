@@ -377,9 +377,66 @@
         <div id="apiCounter" class="api-counter">0 Questions Answered and counting</div>
     </div>
 
-    <div class="user-info" style="position: absolute; top: 20px; right: 20px; color: #666;">
+    <div class="user-info" style="position: absolute; top: 20px; right: 20px; color: #666; display: flex; align-items: center; gap: 10px;">
         Hello {{ current_user.username }}
+        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
     </div>
+    
+    <div class="history-panel">
+        <h3>Question History</h3>
+        <div class="history-list">
+            {% for question in current_user.questions|sort(attribute='timestamp', reverse=True) %}
+            <div class="history-item">
+                <div class="history-time">{{ question.timestamp.strftime('%Y-%m-%d %H:%M') }}</div>
+                <div class="history-query">{{ question.query }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <style>
+        .history-panel {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: #f8f9fa;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        .history-list {
+            margin-top: 20px;
+        }
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .history-time {
+            font-size: 12px;
+            color: #666;
+        }
+        .history-query {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .chat-container {
+            margin-left: 320px;
+        }
+        .logout-btn {
+            background: #ff4444;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .logout-btn:hover {
+            background: #ee3333;
+        }
+    </style>
 
     <div class="footer">
         Built with ❤️ by <a href="https://www.cloudcraftwithfranck.org/" target="_blank">CloudCraftWithFranck</a>

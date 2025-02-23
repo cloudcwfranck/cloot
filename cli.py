@@ -58,14 +58,31 @@ def logout():
 
 
 @app.route('/ask', methods=['POST'])
+@login_required
 def ask_endpoint():
     data = request.json
     query = data.get('query', '')
     response = ai_helper.generate_response(query)
+    
+    # Store the question
+    question = Question(
+        query=query,
+        response=response,
+        user_id=current_user.id
+    )
+    db.session.add(question)
+    db.session.commit()
+    
     return jsonify({
         'response': response,
         'apiCalls': ai_helper.api_calls
     })
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     with app.app_context():
