@@ -377,15 +377,8 @@
         <div id="apiCounter" class="api-counter">0 Questions Answered and counting</div>
     </div>
 
-    <!-- Name Modal -->
-    <div id="nameModal" class="modal">
-        <div class="modal-content">
-            <h2>Hi, welcome to Cloot, your Cloud AI assistant.</h2>
-            <p>What is your name?</p>
-            <input type="text" id="nameInput" placeholder="Enter your name">
-            <div id="nameError" class="error-message">Please enter your name</div>
-            <button onclick="submitName()">Submit</button>
-        </div>
+    <div class="user-info" style="position: absolute; top: 20px; right: 20px; color: #666;">
+        Hello {{ current_user.username }}
     </div>
 
     <div class="footer">
@@ -482,32 +475,10 @@
     <div id="newsPopup" class="news-popup"></div>
 
     <script>
-        // Show name modal on load
+        // Initialize chat container
         window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('nameModal').style.display = 'block';
-            document.querySelector('.chat-container').style.display = 'none';
-        });
-
-        function submitName() {
-            const name = document.getElementById('nameInput').value.trim();
-            const errorMsg = document.getElementById('nameError');
-            if (!name) {
-                errorMsg.style.display = 'block';
-                return;
-            }
-            errorMsg.style.display = 'none';
-            document.getElementById('nameModal').innerHTML = `
-                <div class="modal-content">
-                    <h2>Hi ${name}, glad to have you here!</h2>
-                    <button onclick="startChat()">Start Chat</button>
-                </div>
-            `;
-        }
-
-        function startChat() {
-            document.getElementById('nameModal').style.display = 'none';
             document.querySelector('.chat-container').style.display = 'block';
-        }
+        });
 
         // Initialize global variables
         const searchHistory = new Set();
