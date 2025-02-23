@@ -66,36 +66,51 @@ def logout():
 @app.route('/ask', methods=['POST'])
 @login_required
 def ask_endpoint():
-    data = request.json
-    query = data.get('query', '')
-    
-    # Check if this exact question was just asked in the last few seconds
-    last_question = Question.query.filter_by(
-        user_id=current_user.id,
-        query=query
-    ).order_by(Question.timestamp.desc()).first()
-    
-    if last_question and (datetime.utcnow() - last_question.timestamp).total_seconds() < 5:
-        return jsonify({
-            'response': last_question.response,
-            'apiCalls': ai_helper.api_calls
-        })
-    
-    response = ai_helper.generate_response(query)
+    try:
+        data = request.json
+        if not data or 'query' not in data:
+            return jsonify({'error': 'No query provided'}), 400
+            
+        query = data.get('query', '')
+        if not query.strip():
+            return jsonify({'error': 'Empty query'}), 400
+        
+        # Check if this exact question was just asked in the last few seconds
+        last_question = Question.query.filter_by(
+            user_id=current_user.id,
+            query=query
+        ).order_by(Question.timestamp.desc()).first()
+        
+        if last_question and (datetime.utcnow() - last_question.timestamp).total_seconds() < 5:
+            return jsonify({
+                'response': last_question.response,
+                'apiCalls': ai_helper.api_calls
+            })
+        
+        response = ai_helper.generate_response(query)
+        if response.startswith('Error:'):
+            return jsonify({'error': response}), 500
     
     # Store the question
-    question = Question(
-        query=query,
-        response=response,
-        user_id=current_user.id
-    )
-    db.session.add(question)
-    db.session.commit()
-    
-    return jsonify({
-        'response': response,
-        'apiCalls': ai_helper.api_calls
-    })
+        try:
+            question = Question(
+                query=query,
+                response=response,
+                user_id=current_user.id
+            )
+            db.session.add(question)
+            db.session.commit()
+            
+            return jsonify({
+                'response': response,
+                'apiCalls': ai_helper.api_calls
+            })
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': 'Database error occurred'}), 500
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     with app.app_context():
