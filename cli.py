@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
+from datetime import datetime
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from openai_helper import OpenAIHelper
 from models import db, User, Question
@@ -67,6 +68,19 @@ def logout():
 def ask_endpoint():
     data = request.json
     query = data.get('query', '')
+    
+    # Check if this exact question was just asked in the last few seconds
+    last_question = Question.query.filter_by(
+        user_id=current_user.id,
+        query=query
+    ).order_by(Question.timestamp.desc()).first()
+    
+    if last_question and (datetime.utcnow() - last_question.timestamp).total_seconds() < 5:
+        return jsonify({
+            'response': last_question.response,
+            'apiCalls': ai_helper.api_calls
+        })
+    
     response = ai_helper.generate_response(query)
     
     # Store the question
