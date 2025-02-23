@@ -66,8 +66,10 @@ def logout():
 @app.route('/ask', methods=['POST'])
 @login_required
 def ask_endpoint():
+    print("Received request at /ask endpoint")
     try:
         data = request.json
+        print(f"Request data: {data}")
         if not data or 'query' not in data:
             return jsonify({'error': 'No query provided'}), 400
             
@@ -87,8 +89,11 @@ def ask_endpoint():
                 'apiCalls': ai_helper.api_calls
             })
         
+        print(f"Sending query to OpenAI: {query}")
         response = ai_helper.generate_response(query)
+        print(f"OpenAI response: {response}")
         if response.startswith('Error:'):
+            print(f"Error detected in response: {response}")
             return jsonify({'error': response}), 500
     
     # Store the question
