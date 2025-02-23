@@ -79,7 +79,22 @@ def ask_endpoint():
             return jsonify({'error': 'No query provided'}), 400
             
         query = data.get('query', '')
+        if not query.strip():
+            return jsonify({'error': 'Empty query'}), 400
+            
         print(f"Processing query: {query}")
+        
+        # Check for duplicate recent questions
+        last_question = Question.query.filter_by(
+            user_id=current_user.id,
+            query=query
+        ).order_by(Question.timestamp.desc()).first()
+        
+        if last_question and (datetime.utcnow() - last_question.timestamp).total_seconds() < 5:
+            return jsonify({
+                'response': last_question.response,
+                'apiCalls': ai_helper.api_calls
+            })
         
         response = ai_helper.generate_response(query)
         print(f"AI Response: {response}")
@@ -87,6 +102,21 @@ def ask_endpoint():
         if response.startswith('Error:'):
             print(f"Error in response: {response}")
             return jsonify({'error': response}), 500
+            
+        # Store the question
+        try:
+            question = Question(
+                query=query,
+                response=response,
+                user_id=current_user.id
+            )
+            db.session.add(question)
+            db.session.commit()
+            print(f"Stored question in database: {query}")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Database error: {str(e)}")
+            return jsonify({'error': 'Database error occurred'}), 500
             
         return jsonify({
             'response': response,
