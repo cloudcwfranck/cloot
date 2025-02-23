@@ -68,9 +68,14 @@ def logout():
 def ask_endpoint():
     print("Received request at /ask endpoint")
     try:
+        if not request.is_json:
+            print("Error: Request is not JSON")
+            return jsonify({'error': 'Request must be JSON'}), 400
+            
         data = request.json
         print(f"Request data: {data}")
         if not data or 'query' not in data:
+            print("Error: No query in request data")
             return jsonify({'error': 'No query provided'}), 400
             
         query = data.get('query', '')
