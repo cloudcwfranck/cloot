@@ -15,7 +15,7 @@ run = ["sh", "-c", "python main.py"]
 deploymentTarget = "cloudrun"
 
 [workflows]
-runButton = "Run CloudBot Web"
+runButton = "Run"
 
 [[workflows.workflow]]
 name = "Run CloudBot"
@@ -28,10 +28,19 @@ args = "python main.py ask 'Create an Azure VM'"
 [[workflows.workflow]]
 name = "Run CloudBot Web"
 author = 37924658
+mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python cli.py"
+args = "python main.py"
+
+[[workflows.workflow]]
+name = "Run"
+author = 37924658
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
 
 [[ports]]
 localPort = 8080
