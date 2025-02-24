@@ -25,6 +25,12 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 @app.route('/')
+def landing():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    return render_template('landing.html')
+
+@app.route('/home')
 @login_required
 def home():
     return render_template('index.html')
