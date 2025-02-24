@@ -4,7 +4,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import json
 import os.path
-from openai.error import OpenAIError
+from openai import OpenAIError
 
 load_dotenv()
 
