@@ -15,7 +15,12 @@ client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 class OpenAIHelper:
     def __init__(self):
-        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY not found in environment variables")
+        if not api_key.startswith('sk-'):
+            raise ValueError("Invalid OPENAI_API_KEY format")
+        self.client = OpenAI(api_key=api_key)
         self.counter_file = 'question_counter.json'
         self.load_counter()
         self.system_prompt = """You are a cloud engineering assistant specializing in AWS, Azure, and GCP.
