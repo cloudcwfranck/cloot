@@ -65,10 +65,16 @@ Additional Notes
     def generate_response(self, query: str) -> str:
         try:
             print("Starting generate_response")
-            self.api_calls += 1
-            self.save_counter()
+            print(f"Query received: {query}")
+            
+            try:
+                self.api_calls += 1
+                self.save_counter()
+            except Exception as counter_error:
+                print(f"Counter error (non-fatal): {str(counter_error)}")
+            
             api_key = os.getenv('OPENAI_API_KEY')
-            print(f"API key present: {bool(api_key)}")
+            print(f"API key present and valid format: {bool(api_key and api_key.startswith('sk-'))}")
             
             if not api_key:
                 print("OpenAI API key not found in environment")

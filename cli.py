@@ -102,12 +102,19 @@ def ask_endpoint():
                 'apiCalls': ai_helper.api_calls
             })
         
-        response = ai_helper.generate_response(query)
-        print(f"AI Response: {response}")
-        
-        if response.startswith('Error:'):
-            print(f"Error in response: {response}")
-            return jsonify({'error': response}), 500
+        try:
+            response = ai_helper.generate_response(query)
+            print(f"AI Response: {response}")
+            
+            if response.startswith('Error:'):
+                print(f"Error in response: {response}")
+                return jsonify({'error': response}), 500
+            elif not response:
+                print("Empty response received")
+                return jsonify({'error': 'Empty response from AI'}), 500
+        except Exception as e:
+            print(f"Error generating response: {str(e)}")
+            return jsonify({'error': f'Failed to generate response: {str(e)}'}), 500
             
         # Store the question
         try:
