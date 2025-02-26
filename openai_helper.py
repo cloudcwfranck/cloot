@@ -67,11 +67,31 @@ Additional Notes
             print("Starting generate_response")
             print(f"Query received: {query}")
             
+            messages = [
+                {"role": "system", "content": self.system_prompt},
+                {"role": "user", "content": query}
+            ]
+            
             try:
+                completion = self.client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=messages
+                )
+                response = completion.choices[0].message.content
+                
                 self.api_calls += 1
                 self.save_counter()
-            except Exception as counter_error:
-                print(f"Counter error (non-fatal): {str(counter_error)}")
+                return response
+                
+            except Exception as e:
+                error_msg = f"OpenAI API error: {str(e)}"
+                print(error_msg)
+                return f"Error: {error_msg}"
+                
+        except Exception as e:
+            error_msg = f"Unexpected error: {str(e)}"
+            print(error_msg)
+            return f"Error: {error_msg}"
             
             api_key = os.getenv('OPENAI_API_KEY')
             print(f"API key present and valid format: {bool(api_key and api_key.startswith('sk-'))}")
