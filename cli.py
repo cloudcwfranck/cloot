@@ -74,6 +74,13 @@ def logout():
 def ask_endpoint():
     print("Received request at /ask endpoint")
     try:
+        if current_user.credits <= 0:
+            return jsonify({
+                'error': 'No credits remaining',
+                'upgrade_required': True,
+                'upgrade_url': url_for('upgrade')
+            }), 403
+
         if not request.is_json:
             print("Error: Request is not JSON")
             return jsonify({'error': 'Request must be JSON'}), 400
@@ -124,12 +131,14 @@ def ask_endpoint():
                 user_id=current_user.id
             )
             db.session.add(question)
+            current_user.credits -= 1
             db.session.commit()
             print(f"Stored question in database: {query}")
             
             return jsonify({
                 'response': response,
-                'apiCalls': ai_helper.api_calls
+                'apiCalls': ai_helper.api_calls,
+                'credits_remaining': current_user.credits
             })
         except Exception as e:
             db.session.rollback()
@@ -144,3 +153,7 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(host='0.0.0.0', port=5000)
+@app.route('/upgrade')
+@login_required
+def upgrade():
+    return render_template('upgrade.html')
