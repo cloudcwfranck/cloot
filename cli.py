@@ -91,7 +91,7 @@ def ask_endpoint():
         print(f"Processing query: {query}")
         
         # Check for duplicate recent questions
-        last_question = Question.query.filter_by(
+        last_question = db.session.query(Question).filter_by(
             user_id=current_user.id,
             query=query
         ).order_by(Question.timestamp.desc()).first()
