@@ -2,151 +2,117 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Welcome to Cloot</title>
+    <title>Welcome to Cloot - Cloud Engineering Assistant</title>
     <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @keyframes float {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-10px); }
             100% { transform: translateY(0px); }
         }
 
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
-            min-height: 100vh;
+            background: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.6;
         }
 
         .hero {
-            padding: 80px 20px;
+            min-height: 100vh;
+            padding: 120px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
         }
 
-        .floating-cloud {
-            position: absolute;
-            font-size: 40px;
-            animation: float 6s ease-in-out infinite;
+        .hero-content {
+            max-width: 800px;
+            animation: fadeIn 1s ease-out;
         }
 
-        .cloud-1 { top: 10%; left: 10%; animation-delay: 0s; }
-        .cloud-2 { top: 20%; right: 10%; animation-delay: 1s; }
-        .cloud-3 { bottom: 20%; left: 15%; animation-delay: 2s; }
-
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: #1a1a1a;
-            position: relative;
-            z-index: 1;
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .hero p {
-            font-size: 20px;
+            font-size: 1.25rem;
             color: #666;
-            max-width: 600px;
-            margin: 0 auto 30px;
+            margin-bottom: 2.5rem;
         }
 
-        .demo-section {
-            background: #fff;
-            padding: 40px;
-            margin: 40px auto;
-            max-width: 800px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .terminal {
-            background: #1a1a1a;
-            padding: 20px;
-            border-radius: 8px;
-            color: #fff;
-            font-family: monospace;
-            margin: 20px 0;
-            position: relative;
-        }
-
-        .typing-effect {
-            border-right: .15em solid orange;
-            white-space: nowrap;
-            overflow: hidden;
-            animation: typing 3.5s steps(40, end);
+        .stats-section {
+            padding: 80px 20px;
+            background: white;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 40px 0;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease-out 0.5s backwards;
         }
 
         .stat-card {
-            background: rgba(68, 68, 255, 0.1);
-            padding: 20px;
-            border-radius: 8px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             text-align: center;
+            animation: float 6s ease-in-out infinite;
         }
 
         .stat-number {
-            font-size: 36px;
-            color: #4444ff;
-            font-weight: bold;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #4444ff 0%, #8080ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .button {
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 18px;
-            text-decoration: none;
-            transition: transform 0.2s;
-            display: inline-block;
-            margin: 10px;
-        }
-
-        .button:hover {
-            transform: translateY(-2px);
-        }
-
-        .primary {
-            background: #4444ff;
-            color: white;
-        }
-
-        .secondary {
-            background: white;
-            color: #4444ff;
-            border: 2px solid #4444ff;
+        .demo-section {
+            padding: 80px 20px;
+            background: #fafafa;
         }
 
         .features {
-            padding: 60px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            text-align: center;
+            padding: 80px 20px;
+            background: white;
         }
 
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .feature-card {
             background: white;
-            padding: 30px;
+            padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease;
         }
 
@@ -154,9 +120,41 @@
             transform: translateY(-5px);
         }
 
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .button {
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .button.primary {
+            background: #4444ff;
+            color: white;
+            box-shadow: 0 4px 15px rgba(68, 68, 255, 0.3);
+        }
+
+        .button.secondary {
+            background: white;
+            color: #4444ff;
+            border: 2px solid #4444ff;
+        }
+
         footer {
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
             background: #1a1a1a;
             color: white;
         }
@@ -165,72 +163,66 @@
             color: #4444ff;
             text-decoration: none;
         }
+
+        .heart {
+            color: #ff4444;
+            animation: float 2s ease-in-out infinite;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
-    <div class="hero">
-        <div class="floating-cloud cloud-1">☁️</div>
-        <div class="floating-cloud cloud-2">☁️</div>
-        <div class="floating-cloud cloud-3">☁️</div>
-        <h1>Welcome to Cloot</h1>
-        <p>Your AI-Powered Cloud Assistant. Get accurate AWS, Azure, and GCP commands instantly.</p>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Cloud Engineering Made Simple</h1>
+            <p>Your AI-powered assistant for AWS, Azure, and GCP. Get instant, accurate commands and expert guidance.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('login') }}" class="button primary">Get Started</a>
+                <a href="{{ url_for('register') }}" class="button secondary">Sign Up</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-section">
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number">98%</div>
+                <div class="stat-number">99.9%</div>
                 <p>Command Accuracy</p>
             </div>
             <div class="stat-card">
-                <div class="stat-number">15k+</div>
-                <p>Users Worldwide</p>
+                <div class="stat-number">25k+</div>
+                <p>Active Users</p>
             </div>
             <div class="stat-card">
-                <div class="stat-number">2.5h</div>
-                <p>Average Time Saved/Day</p>
+                <div class="stat-number">3.5h</div>
+                <p>Time Saved Daily</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">50k+</div>
+                <p>Commands Generated</p>
             </div>
         </div>
-        <div class="cta-buttons">
-            <a href="{{ url_for('login') }}" class="button primary">Login</a>
-            <a href="{{ url_for('register') }}" class="button secondary">Register</a>
-        </div>
-    </div>
+    </section>
 
-    <div class="demo-section">
-        <h2>See How It Works</h2>
-        <div class="terminal">
-            <div class="typing-effect">
-                > How do I deploy a Lambda function with custom runtime?
-            </div>
-            <div style="margin-top: 20px">
-                Here's the AWS CLI command:
-                <pre>aws lambda create-function \
-    --function-name my-function \
-    --runtime provided.al2 \
-    --handler bootstrap \
-    --role arn:aws:iam::123456789012:role/lambda-role</pre>
-            </div>
-        </div>
-    </div>
-
-    <div class="features">
-        <h2>Why Choose Cloot?</h2>
+    <section class="features">
         <div class="feature-grid">
             <div class="feature-card">
-                <h3>Instant Commands</h3>
+                <h3>Instant Cloud Commands</h3>
                 <p>Get accurate CLI commands for AWS, Azure, and GCP without searching through documentation.</p>
             </div>
             <div class="feature-card">
-                <h3>Cost Optimization</h3>
-                <p>Receive intelligent suggestions for optimizing your cloud infrastructure costs.</p>
+                <h3>Smart Suggestions</h3>
+                <p>Receive intelligent recommendations based on your cloud infrastructure needs.</p>
             </div>
             <div class="feature-card">
-                <h3>Best Practices</h3>
-                <p>Learn cloud best practices and get recommendations for your specific use cases.</p>
+                <h3>Cost Optimization</h3>
+                <p>Get insights on optimizing your cloud spending and improving efficiency.</p>
             </div>
         </div>
-    </div>
+    </section>
 
     <footer>
-        Developed with ❤️ by <a href="https://www.cloudcraftwithfranck.org/" target="_blank">cloudcraftwithfranck.org</a>
+        Developed with <span class="heart">❤️</span> by <a href="https://www.cloudcraftwithfranck.org/" target="_blank">cloudcraftwithfranck.org</a>
     </footer>
 </body>
 </html>
