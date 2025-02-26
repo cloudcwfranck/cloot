@@ -8,11 +8,6 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['STRIPE_PUBLIC_KEY'] = 'your_stripe_public_key'
-app.config['STRIPE_SECRET_KEY'] = 'your_stripe_secret_key'
-
-import stripe
-stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
 db.init_app(app)
 
@@ -79,13 +74,6 @@ def logout():
 def ask_endpoint():
     print("Received request at /ask endpoint")
     try:
-        if current_user.credits <= 0:
-            return jsonify({
-                'error': 'No credits remaining',
-                'upgrade_required': True,
-                'upgrade_url': url_for('upgrade')
-            }), 403
-
         if not request.is_json:
             print("Error: Request is not JSON")
             return jsonify({'error': 'Request must be JSON'}), 400
@@ -136,14 +124,12 @@ def ask_endpoint():
                 user_id=current_user.id
             )
             db.session.add(question)
-            current_user.credits -= 1
             db.session.commit()
             print(f"Stored question in database: {query}")
             
             return jsonify({
                 'response': response,
-                'apiCalls': ai_helper.api_calls,
-                'credits_remaining': current_user.credits
+                'apiCalls': ai_helper.api_calls
             })
         except Exception as e:
             db.session.rollback()
@@ -158,49 +144,3 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(host='0.0.0.0', port=5000)
-@app.route('/upgrade')
-@login_required
-def upgrade():
-    return render_template('upgrade.html', stripe_public_key=app.config['STRIPE_PUBLIC_KEY'])
-
-@app.route('/create-checkout-session', methods=['POST'])
-@login_required
-def create_checkout():
-    plan = request.form.get('plan')
-    
-    if plan == 'annual':
-        price = 1000  # $10.00
-        interval = 'year'
-    else:
-        price = 1500  # $15.00
-        interval = 'month'
-    
-    try:
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price_data': {
-                    'currency': 'usd',
-                    'unit_amount': price,
-                    'product_data': {
-                        'name': f'Cloot {interval.capitalize()} Plan',
-                    },
-                    'recurring': {
-                        'interval': interval,
-                    }
-                },
-                'quantity': 1,
-            }],
-            mode='subscription',
-            success_url=request.host_url + 'payment-success',
-            cancel_url=request.host_url + 'upgrade',
-            customer_email=current_user.username
-        )
-        return jsonify({'id': checkout_session.id})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 403
-
-@app.route('/payment-success')
-@login_required
-def payment_success():
-    return render_template('payment_success.html')
