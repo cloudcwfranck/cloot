@@ -12,88 +12,101 @@
         }
 
         body {
-            background: #000;
-            color: #fff;
+            background: #fff;
+            color: #000;
             line-height: 1.6;
         }
 
         .nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 100;
+            padding: 20px 40px;
+            background: #fff;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 600;
         }
 
         .nav-links {
             display: flex;
-            gap: 20px;
+            gap: 30px;
+            align-items: center;
         }
 
         .nav-links a {
-            color: #fff;
+            color: #000;
             text-decoration: none;
             font-size: 14px;
         }
 
-        .sign-up {
-            background: #fff;
-            color: #000;
+        .contact-button {
+            background: #000;
+            color: #fff;
             padding: 8px 16px;
-            border-radius: 20px;
+            border-radius: 6px;
         }
 
         .hero {
-            padding: 120px 20px 60px;
+            padding: 80px 20px;
             text-align: center;
             max-width: 800px;
             margin: 0 auto;
         }
 
         h1 {
-            font-size: 48px;
+            font-size: 64px;
+            line-height: 1.2;
             margin-bottom: 20px;
-            font-weight: 600;
         }
 
         .hero p {
-            color: #888;
-            margin-bottom: 30px;
+            color: #666;
+            margin-bottom: 40px;
             font-size: 18px;
         }
 
-        .hero-buttons {
+        .tabs {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             justify-content: center;
             margin-bottom: 40px;
         }
 
-        .button {
-            padding: 8px 20px;
+        .tab {
+            padding: 8px 16px;
+            border: 1px solid #e0e0e0;
             border-radius: 20px;
-            text-decoration: none;
-            font-size: 14px;
+            cursor: pointer;
         }
 
-        .primary-button {
-            background: #fff;
-            color: #000;
-        }
-
-        .secondary-button {
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .tab.active {
+            background: #000;
             color: #fff;
+            border-color: #000;
+        }
+
+        .tab-new {
+            position: relative;
+        }
+
+        .tab-new::after {
+            content: 'NEW';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #6E56CF;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
         }
 
         .image-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             padding: 0 20px;
             max-width: 1200px;
@@ -107,136 +120,116 @@
             object-fit: cover;
         }
 
-        .features {
-            padding: 100px 20px;
-        }
-
-        .feature-card {
-            background: #111;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 40px;
+        .build-section {
+            padding: 100px 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
             max-width: 1200px;
             margin: 0 auto;
         }
 
-        .feature-card img {
-            width: 100%;
-            border-radius: 8px;
-            margin-top: 20px;
+        .model-info h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
         }
 
-        .stats {
-            padding: 100px 20px;
-            text-align: center;
+        .model-info p {
+            color: #666;
+            margin-bottom: 30px;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 30px;
-            max-width: 1200px;
-            margin: 40px auto 0;
-        }
-
-        .stat-item h3 {
-            font-size: 36px;
-            margin-bottom: 10px;
-        }
-
-        .stat-item p {
-            color: #888;
-            font-size: 14px;
-        }
-
-        .partners {
+        .buttons {
             display: flex;
-            justify-content: center;
-            gap: 30px;
-            padding: 40px 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 20px;
         }
 
-        .partners img {
-            height: 20px;
-            opacity: 0.5;
+        .black-button {
+            background: #000;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
         }
 
-        footer {
-            padding: 40px 20px;
-            text-align: center;
-            color: #888;
+        .outline-button {
+            border: 1px solid #000;
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .platform-links {
+            margin-top: 60px;
+        }
+
+        .platform-link {
+            display: block;
+            color: #000;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .platform-link::after {
+            content: '→';
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
     <nav class="nav">
-        <div class="logo">midjourney</div>
+        <div class="logo">stability.ai</div>
         <div class="nav-links">
-            <a href="#">Plans</a>
-            <a href="#">Apps</a>
-            <a href="#">Resources</a>
+            <a href="#">Models</a>
+            <a href="#">Applications</a>
+            <a href="#">Deployment</a>
             <a href="#">Company</a>
-            <a href="{{ url_for('login') }}">Sign in</a>
-            <a href="{{ url_for('register') }}" class="sign-up">Sign up</a>
+            <a href="#">Docs</a>
+            <a href="{{ url_for('register') }}" class="contact-button">Contact Us</a>
         </div>
     </nav>
 
     <section class="hero">
         <h1>Unlocking Human Potential With Generative AI.</h1>
-        <p>Developing and enabling open-source AI models for world-positive use cases, creating endless possibilities.</p>
-        <div class="hero-buttons">
-            <a href="{{ url_for('register') }}" class="button primary-button">Create</a>
-            <a href="#" class="button secondary-button">Learn more</a>
+        <p>Developing and providing open-source AI models for creative problem-solving and industrial use.</p>
+        
+        <div class="tabs">
+            <div class="tab active">Image</div>
+            <div class="tab">Video</div>
+            <div class="tab">Audio</div>
+            <div class="tab">Language Models</div>
+            <div class="tab tab-new">3D Objects</div>
+        </div>
+    </section>
+
+    <section class="build-section">
+        <div class="model-info">
+            <h2>Stable Diffusion 3 Medium.</h2>
+            <p>Is our most advanced text-to-image AI model with two billion parameters, excelling in photorealism, handling complex prompts, generating clear text, and offering unparalleled creative possibilities.</p>
+            
+            <div class="buttons">
+                <a href="{{ url_for('register') }}" class="black-button">Get Started with API</a>
+                <a href="#" class="outline-button">Show Info</a>
+            </div>
+
+            <div class="platform-links">
+                <a href="#" class="platform-link">Cloud Platforms</a>
+                <a href="#" class="platform-link">Platform API</a>
+                <a href="#" class="platform-link">Self-Hosted License</a>
+            </div>
         </div>
         <div class="image-grid">
-            <img src="/static/img1.jpg" alt="AI Generated Art">
-            <img src="/static/img2.jpg" alt="AI Generated Art">
-            <img src="/static/img3.jpg" alt="AI Generated Art">
+            <img src="https://picsum.photos/800/600" alt="AI Generated Art">
+            <img src="https://picsum.photos/800/601" alt="AI Generated Art">
+            <img src="https://picsum.photos/800/602" alt="AI Generated Art">
+            <img src="https://picsum.photos/800/603" alt="AI Generated Art">
         </div>
     </section>
 
-    <section class="features">
-        <div class="feature-card">
-            <h2>Build with a Stable AI.</h2>
-            <p>AI tools designed to enhance and simplify your creative workflow.</p>
-            <img src="/static/feature-screenshot.png" alt="AI Interface Screenshot">
-        </div>
-    </section>
-
-    <section class="stats">
-        <h2>Technologies Supported by Humans.</h2>
-        <div class="stats-grid">
-            <div class="stat-item">
-                <h3>$101M</h3>
-                <p>Growth Capital</p>
-            </div>
-            <div class="stat-item">
-                <h3>2 billion</h3>
-                <p>Monthly API Calls</p>
-            </div>
-            <div class="stat-item">
-                <h3>200K+</h3>
-                <p>Active Users</p>
-            </div>
-            <div class="stat-item">
-                <h3>10M</h3>
-                <p>Monthly Active Users</p>
-            </div>
-        </div>
-    </section>
-
-    <div class="partners">
-        <img src="/static/partner1.svg" alt="Partner">
-        <img src="/static/partner2.svg" alt="Partner">
-        <img src="/static/partner3.svg" alt="Partner">
-        <img src="/static/partner4.svg" alt="Partner">
-        <img src="/static/partner5.svg" alt="Partner">
-    </div>
-
-    <footer>
-        Developed with ❤️ by <a href="https://www.cloudcraftwithfranck.org/" style="color: #888; text-decoration: none;">cloudcraftwithfranck.org</a>
+    <footer style="text-align: center; padding: 20px; color: #666;">
+        Developed with ❤️ by <a href="https://www.cloudcraftwithfranck.org/" style="color: #666; text-decoration: none;">cloudcraftwithfranck.org</a>
     </footer>
 </body>
 </html>
