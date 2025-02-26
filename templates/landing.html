@@ -65,7 +65,30 @@
         .hero p {
             color: #666;
             margin-bottom: 40px;
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .hero-subtitle {
+            font-size: 24px !important;
+            color: #333 !important;
+            font-weight: 600 !important;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
             font-size: 18px;
+            margin-bottom: 40px;
+            transition: transform 0.2s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
         }
 
         .tabs {
@@ -187,8 +210,9 @@
     </nav>
 
     <section class="hero">
-        <h1>Save time with CLOUD AI ASSISTANT</h1>
-        <p>Over 100k developers have saved 2.5 hours daily with Cloot.</p>
+        <h1>Your AI-Powered Cloud Assistant – Solve IT Issues Faster!</h1>
+        <p class="hero-subtitle">Over 100k developers have saved 2.5 hours daily with Cloot.</p>
+        <a href="{{ url_for('register') }}" class="cta-button">Start Using Cloot For Free</a>
         
         <div class="tabs">
             <div class="tab active">Cloud</div>
@@ -201,8 +225,8 @@
 
     <section class="build-section">
         <div class="model-info">
-            <h2>Stable Diffusion 3 Medium.</h2>
-            <p>Is our most advanced text-to-image AI model with two billion parameters, excelling in photorealism, handling complex prompts, generating clear text, and offering unparalleled creative possibilities.</p>
+            <h2>Cloud Infrastructure Assistant</h2>
+            <p>Our advanced AI assistant helps you manage cloud infrastructure, automate tasks, and resolve technical issues faster than ever before.</p>
             
             <div class="buttons">
                 <a href="{{ url_for('register') }}" class="black-button">Get Started with API</a>
