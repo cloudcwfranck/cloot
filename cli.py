@@ -8,6 +8,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['STRIPE_PUBLIC_KEY'] = 'your_stripe_public_key'
+app.config['STRIPE_SECRET_KEY'] = 'your_stripe_secret_key'
+
+import stripe
+stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
 db.init_app(app)
 
@@ -156,4 +161,46 @@ if __name__ == '__main__':
 @app.route('/upgrade')
 @login_required
 def upgrade():
-    return render_template('upgrade.html')
+    return render_template('upgrade.html', stripe_public_key=app.config['STRIPE_PUBLIC_KEY'])
+
+@app.route('/create-checkout-session', methods=['POST'])
+@login_required
+def create_checkout():
+    plan = request.form.get('plan')
+    
+    if plan == 'annual':
+        price = 1000  # $10.00
+        interval = 'year'
+    else:
+        price = 1500  # $15.00
+        interval = 'month'
+    
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'unit_amount': price,
+                    'product_data': {
+                        'name': f'Cloot {interval.capitalize()} Plan',
+                    },
+                    'recurring': {
+                        'interval': interval,
+                    }
+                },
+                'quantity': 1,
+            }],
+            mode='subscription',
+            success_url=request.host_url + 'payment-success',
+            cancel_url=request.host_url + 'upgrade',
+            customer_email=current_user.username
+        )
+        return jsonify({'id': checkout_session.id})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 403
+
+@app.route('/payment-success')
+@login_required
+def payment_success():
+    return render_template('payment_success.html')

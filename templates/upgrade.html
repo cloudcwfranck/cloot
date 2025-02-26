@@ -3,6 +3,7 @@
 <html>
 <head>
     <title>Upgrade Your Plan - Cloot</title>
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         * {
             margin: 0;
@@ -15,18 +16,23 @@
             padding: 40px;
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
             text-align: center;
         }
         h1 {
             margin-bottom: 20px;
         }
+        .plans {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 40px 0;
+        }
         .plan {
             border: 1px solid #eee;
             padding: 30px;
             border-radius: 8px;
-            margin: 20px 0;
         }
         .price {
             font-size: 36px;
@@ -40,24 +46,92 @@
             border-radius: 8px;
             text-decoration: none;
             margin-top: 20px;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+        }
+        .plan.popular {
+            border-color: #6E56CF;
+            position: relative;
+        }
+        .popular-tag {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #6E56CF;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Upgrade Your Plan</h1>
-        <p>Continue using Cloot with our premium plan</p>
+        <p>Continue using Cloot with our premium plans</p>
         
-        <div class="plan">
-            <h2>Premium Plan</h2>
-            <div class="price">$15/month</div>
-            <ul style="list-style: none;">
-                <li>✓ Unlimited questions</li>
-                <li>✓ Priority support</li>
-                <li>✓ Advanced features</li>
-            </ul>
-            <a href="#" class="btn">Upgrade Now</a>
+        <div class="plans">
+            <div class="plan">
+                <h2>Monthly Plan</h2>
+                <div class="price">$15/month</div>
+                <ul style="list-style: none;">
+                    <li>✓ Unlimited questions</li>
+                    <li>✓ Priority support</li>
+                    <li>✓ Advanced features</li>
+                </ul>
+                <button class="btn" onclick="checkout('monthly')">Choose Monthly</button>
+            </div>
+            
+            <div class="plan popular">
+                <div class="popular-tag">MOST POPULAR</div>
+                <h2>Annual Plan</h2>
+                <div class="price">$10/month</div>
+                <p>billed annually</p>
+                <ul style="list-style: none;">
+                    <li>✓ Save 33%</li>
+                    <li>✓ Unlimited questions</li>
+                    <li>✓ Priority support</li>
+                    <li>✓ Advanced features</li>
+                </ul>
+                <button class="btn" style="background: #6E56CF;" onclick="checkout('annual')">Choose Annual</button>
+            </div>
         </div>
     </div>
+
+    <script>
+        const stripe = Stripe('{{ stripe_public_key }}');
+        
+        async function checkout(plan) {
+            try {
+                const response = await fetch('/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `plan=${plan}`
+                });
+                
+                const session = await response.json();
+                
+                if (session.error) {
+                    alert(session.error);
+                    return;
+                }
+                
+                const result = await stripe.redirectToCheckout({
+                    sessionId: session.id
+                });
+                
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Something went wrong. Please try again.');
+            }
+        }
+    </script>
 </body>
 </html>
