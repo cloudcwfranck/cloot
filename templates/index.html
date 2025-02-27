@@ -805,7 +805,7 @@
             const queryInput = document.getElementById('queryInput');
             const folderSelect = document.getElementById('folderSelect');
             const query = queryInput.value.trim();
-            const folder_id = folderSelect.value;
+            const folderId = folderSelect.value;
 
             if (!query) return;
 
@@ -841,7 +841,10 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ query, folder_id }),
+                    body: JSON.stringify({ 
+                        query: query,
+                        folder_id: folderId || null
+                    }),
                 });
 
                 if (!response.ok) {
