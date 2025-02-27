@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,58 +8,86 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: #f5f5f5;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: white;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        h1 { 
-            margin-bottom: 20px; 
+        h1 {
+            margin-bottom: 20px;
         }
         .folder-list {
-            margin-top: 20px;
+            list-style: none;
+            padding: 0;
         }
         .folder-item {
+            background: white;
             padding: 15px;
-            background: #f9f9f9;
-            border-radius: 8px;
             margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .folder-name {
+        .folder-link {
+            color: #333;
+            text-decoration: none;
             font-weight: 500;
         }
-        .folder-form {
-            margin-bottom: 30px;
+        .folder-link:hover {
+            text-decoration: underline;
         }
-        input {
-            padding: 10px;
+        .create-form {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+        }
+        .create-form input {
+            flex: 1;
+            padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            width: 300px;
+            margin-right: 10px;
         }
-        button {
-            padding: 10px 20px;
+        .create-form button {
+            padding: 8px 15px;
             background: #4444ff;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
-        .nav-links {
-            margin-top: 20px;
+        .delete-form button {
+            padding: 5px 10px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
         }
-        .nav-links a {
-            color: #4444ff;
+        .navbar {
+            background: #4444ff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
             text-decoration: none;
-            margin-right: 15px;
+            margin-left: 15px;
+        }
+        .navbar-brand {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
         }
         .flash {
             background: #e3f2fd;
@@ -70,9 +99,18 @@
     </style>
 </head>
 <body>
+    <div class="navbar">
+        <a href="{{ url_for('home') }}" class="navbar-brand">Cloot</a>
+        <div>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('folders') }}">Folders</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+    
     <div class="container">
-        <h1>Your Folders</h1>
-
+        <h1>Manage Folders</h1>
+        
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
@@ -80,34 +118,22 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-
-        <div class="folder-form">
-            <form method="POST">
-                <input type="text" name="folder_name" placeholder="New folder name">
-                <button type="submit">Create Folder</button>
-            </form>
-        </div>
-
-        <div class="folder-list">
-            {% if folders %}
-                {% for folder in folders %}
-                    <div class="folder-item">
-                        <span class="folder-name">
-                            <a href="{{ url_for('folder_details', folder_id=folder.id) }}">{{ folder.name }}</a>
-                        </span>
-                        <form method="POST" action="{{ url_for('delete_folder', folder_id=folder.id) }}" onsubmit="return confirm('Are you sure you want to delete this folder?');">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>You don't have any folders yet.</p>
-            {% endif %}
-        </div>
-
-        <div class="nav-links">
-            <a href="{{ url_for('home') }}">Back to Home</a>
-        </div>
+        
+        <form class="create-form" method="POST">
+            <input type="text" name="folder_name" placeholder="New folder name" required>
+            <button type="submit">Create Folder</button>
+        </form>
+        
+        <ul class="folder-list">
+            {% for folder in folders %}
+                <li class="folder-item">
+                    <a href="{{ url_for('folder_details', folder_id=folder.id) }}" class="folder-link">{{ folder.name }}</a>
+                    <form class="delete-form" method="POST" action="{{ url_for('delete_folder', folder_id=folder.id) }}" onsubmit="return confirm('Are you sure you want to delete this folder?');">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 </body>
 </html>
