@@ -363,6 +363,9 @@
 
         <form id="queryForm" onsubmit="return handleSubmit(event)">
             <div class="input-container">
+                <select id="folderSelect">
+                    <option value="">Select Folder</option>
+                    </select>
                 <input type="text" class="message-input" id="queryInput" 
                        placeholder="Ask about cloud infrastructure..."
                        oninput="handleInput(event)">
@@ -381,7 +384,7 @@
         Hello {{ current_user.username }}
         <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
     </div>
-    
+
     <div class="history-panel">
         <h3>Question History</h3>
         <div class="history-list">
@@ -656,7 +659,7 @@
         function handleInput(event) {
             const input = event.target.value.toLowerCase();
             const autocomplete = document.getElementById('autocomplete');
-            
+
             if (!input) {
                 autocomplete.style.display = 'none';
                 return;
@@ -702,7 +705,7 @@
             if (matches.length) {
                 autocomplete.innerHTML = matches.join('');
                 autocomplete.style.display = 'block';
-                
+
                 // Position the autocomplete dropdown
                 const inputRect = event.target.getBoundingClientRect();
                 autocomplete.style.top = `${inputRect.bottom + window.scrollY}px`;
@@ -798,20 +801,47 @@
 
         async function handleSubmit(event) {
             event.preventDefault();
-            const input = document.getElementById('queryInput');
+
+            const queryInput = document.getElementById('queryInput');
+            const folderSelect = document.getElementById('folderSelect');
+            const query = queryInput.value.trim();
+            const folder_id = folderSelect.value;
+
+            if (!query) return;
+
+            // Clear the input
+            queryInput.value = '';
+
+            // Add to response area
             const responseArea = document.getElementById('responseArea');
-            const query = input.value;
 
-            if (!query.trim()) return;
+            // User message
+            const userMessageEl = document.createElement('div');
+            userMessageEl.className = 'message user-message';
+            userMessageEl.textContent = query;
+            responseArea.appendChild(userMessageEl);
 
-            responseArea.innerHTML = '<p>Cloot is thinking...</p>';
-            const startTime = performance.now();
+            // Add to search history
+            searchHistory.add(query);
+
+            // Assistant message (loading)
+            const assistantMessageEl = document.createElement('div');
+            assistantMessageEl.className = 'message assistant-message loading';
+            assistantMessageEl.textContent = 'Thinking...';
+            responseArea.appendChild(assistantMessageEl);
+
+            // Scroll to bottom
+            responseArea.scrollTop = responseArea.scrollHeight;
+
+            const startTime = Date.now();
 
             try {
                 const response = await fetch('/ask', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({query})
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query, folder_id }),
                 });
 
                 if (!response.ok) {
@@ -819,7 +849,7 @@
                 }
 
                 const data = await response.json();
-                const endTime = performance.now();
+                const endTime = Date.now();
                 document.getElementById('apiCounter').textContent = `${data.apiCalls} Questions Answered and counting`;
                 const executionTime = ((endTime - startTime) / 1000).toFixed(1);
 
