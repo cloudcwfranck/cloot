@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from datetime import datetime
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -83,59 +84,6 @@ def ask_endpoint():
         print(f"Request data: {data}")
         if not data or 'query' not in data:
             print("Error: No query in request data")
-
-@app.route('/folders', methods=['GET', 'POST'])
-@login_required
-def folders():
-    if request.method == 'POST':
-        folder_name = request.form.get('folder_name')
-        if not folder_name:
-            flash('Folder name cannot be empty')
-            return redirect(url_for('folders'))
-            
-        new_folder = Folder(name=folder_name, user_id=current_user.id)
-        db.session.add(new_folder)
-        db.session.commit()
-        flash(f'Folder "{folder_name}" created successfully')
-        
-    folders = Folder.query.filter_by(user_id=current_user.id).all()
-    return render_template('folders.html', folders=folders)
-
-@app.route('/folders/<int:folder_id>', methods=['GET'])
-@login_required
-def folder_details(folder_id):
-    folder = Folder.query.filter_by(id=folder_id, user_id=current_user.id).first_or_404()
-    questions = Question.query.filter_by(folder_id=folder_id).order_by(Question.timestamp.desc()).all()
-    return render_template('folder_details.html', folder=folder, questions=questions)
-
-@app.route('/folders/<int:folder_id>/delete', methods=['POST'])
-@login_required
-def delete_folder(folder_id):
-    folder = Folder.query.filter_by(id=folder_id, user_id=current_user.id).first_or_404()
-    
-    # Move all questions to 'unfiled' (set folder_id to None)
-    Question.query.filter_by(folder_id=folder_id).update({Question.folder_id: None})
-    
-    db.session.delete(folder)
-    db.session.commit()
-    flash(f'Folder "{folder.name}" deleted successfully')
-    return redirect(url_for('folders'))
-
-@app.route('/questions/<int:question_id>/move', methods=['POST'])
-@login_required
-def move_question(question_id):
-    question = Question.query.filter_by(id=question_id, user_id=current_user.id).first_or_404()
-    folder_id = request.form.get('folder_id')
-    
-    if folder_id == '':
-        question.folder_id = None
-    else:
-        folder = Folder.query.filter_by(id=folder_id, user_id=current_user.id).first_or_404()
-        question.folder_id = folder.id
-        
-    db.session.commit()
-    return jsonify({'success': True})
-
             return jsonify({'error': 'No query provided'}), 400
             
         query = data.get('query', '').strip()
@@ -196,6 +144,58 @@ def move_question(question_id):
     except Exception as e:
         print(f"Unexpected error in ask_endpoint: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+@app.route('/folders', methods=['GET', 'POST'])
+@login_required
+def folders():
+    if request.method == 'POST':
+        folder_name = request.form.get('folder_name')
+        if not folder_name:
+            flash('Folder name cannot be empty')
+            return redirect(url_for('folders'))
+            
+        new_folder = Folder(name=folder_name, user_id=current_user.id)
+        db.session.add(new_folder)
+        db.session.commit()
+        flash(f'Folder "{folder_name}" created successfully')
+        
+    folders = Folder.query.filter_by(user_id=current_user.id).all()
+    return render_template('folders.html', folders=folders)
+
+@app.route('/folders/<int:folder_id>', methods=['GET'])
+@login_required
+def folder_details(folder_id):
+    folder = Folder.query.filter_by(id=folder_id, user_id=current_user.id).first_or_404()
+    questions = Question.query.filter_by(folder_id=folder_id).order_by(Question.timestamp.desc()).all()
+    return render_template('folder_details.html', folder=folder, questions=questions)
+
+@app.route('/folders/<int:folder_id>/delete', methods=['POST'])
+@login_required
+def delete_folder(folder_id):
+    folder = Folder.query.filter_by(id=folder_id, user_id=current_user.id).first_or_404()
+    
+    # Move all questions to 'unfiled' (set folder_id to None)
+    Question.query.filter_by(folder_id=folder_id).update({Question.folder_id: None})
+    
+    db.session.delete(folder)
+    db.session.commit()
+    flash(f'Folder "{folder.name}" deleted successfully')
+    return redirect(url_for('folders'))
+
+@app.route('/questions/<int:question_id>/move', methods=['POST'])
+@login_required
+def move_question(question_id):
+    question = Question.query.filter_by(id=question_id, user_id=current_user.id).first_or_404()
+    folder_id = request.form.get('folder_id')
+    
+    if folder_id == '':
+        question.folder_id = None
+    else:
+        folder = Folder.query.filter_by(id=folder_id, user_id=current_user.id).first_or_404()
+        question.folder_id = folder.id
+        
+    db.session.commit()
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     with app.app_context():
