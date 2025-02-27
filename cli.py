@@ -83,7 +83,6 @@ def ask_endpoint():
         print(f"Request data: {data}")
         if not data or 'query' not in data:
             print("Error: No query in request data")
-            return jsonify({'error': 'No query provided'}), 400
 
 @app.route('/folders', methods=['GET', 'POST'])
 @login_required
@@ -137,6 +136,7 @@ def move_question(question_id):
     db.session.commit()
     return jsonify({'success': True})
 
+            return jsonify({'error': 'No query provided'}), 400
             
         query = data.get('query', '').strip()
         if not query:
