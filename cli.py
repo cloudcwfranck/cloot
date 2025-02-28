@@ -1,14 +1,18 @@
-
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from datetime import datetime
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from openai_helper import OpenAIHelper
-from models import db, User, Question, Folder
+from models import db, User, Question
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['STRIPE_PUBLIC_KEY'] = 'your_stripe_public_key'
+app.config['STRIPE_SECRET_KEY'] = 'your_stripe_secret_key'
+
+import stripe
+stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
 db.init_app(app)
 
@@ -34,8 +38,7 @@ def landing():
 @app.route('/home')
 @login_required
 def home():
-    folders = Folder.query.filter_by(user_id=current_user.id).all()
-    return render_template('index.html', folders=folders)
+    return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -76,6 +79,13 @@ def logout():
 def ask_endpoint():
     print("Received request at /ask endpoint")
     try:
+        if current_user.credits <= 0:
+            return jsonify({
+                'error': 'No credits remaining',
+                'upgrade_required': True,
+                'upgrade_url': url_for('upgrade')
+            }), 403
+
         if not request.is_json:
             print("Error: Request is not JSON")
             return jsonify({'error': 'Request must be JSON'}), 400
@@ -120,21 +130,20 @@ def ask_endpoint():
             
         # Store the question
         try:
-            folder_id = data.get('folder_id')
             question = Question(
                 query=query,
                 response=response,
-                user_id=current_user.id,
-                folder_id=folder_id
+                user_id=current_user.id
             )
             db.session.add(question)
+            current_user.credits -= 1
             db.session.commit()
             print(f"Stored question in database: {query}")
             
             return jsonify({
                 'response': response,
                 'apiCalls': ai_helper.api_calls,
-                'question_id': question.id
+                'credits_remaining': current_user.credits
             })
         except Exception as e:
             db.session.rollback()
@@ -145,59 +154,53 @@ def ask_endpoint():
         print(f"Unexpected error in ask_endpoint: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-@app.route('/folders', methods=['GET', 'POST'])
-@login_required
-def folders():
-    if request.method == 'POST':
-        folder_name = request.form.get('folder_name')
-        if not folder_name:
-            flash('Folder name cannot be empty')
-            return redirect(url_for('folders'))
-            
-        new_folder = Folder(name=folder_name, user_id=current_user.id)
-        db.session.add(new_folder)
-        db.session.commit()
-        flash(f'Folder "{folder_name}" created successfully')
-        
-    folders = Folder.query.filter_by(user_id=current_user.id).all()
-    return render_template('folders.html', folders=folders)
-
-@app.route('/folders/<int:folder_id>', methods=['GET'])
-@login_required
-def folder_details(folder_id):
-    folder = Folder.query.filter_by(id=folder_id, user_id=current_user.id).first_or_404()
-    questions = Question.query.filter_by(folder_id=folder_id, user_id=current_user.id).order_by(Question.timestamp.desc()).all()
-    return render_template('folder_details.html', folder=folder, questions=questions)
-
-@app.route('/folders/<int:folder_id>/delete', methods=['POST'])
-@login_required
-def delete_folder(folder_id):
-    folder = Folder.query.filter_by(id=folder_id, user_id=current_user.id).first_or_404()
-    
-    # Move all questions to 'unfiled' (set folder_id to None)
-    Question.query.filter_by(folder_id=folder_id).update({Question.folder_id: None})
-    
-    db.session.delete(folder)
-    db.session.commit()
-    flash(f'Folder "{folder.name}" deleted successfully')
-    return redirect(url_for('folders'))
-
-@app.route('/questions/<int:question_id>/move', methods=['POST'])
-@login_required
-def move_question(question_id):
-    question = Question.query.filter_by(id=question_id, user_id=current_user.id).first_or_404()
-    folder_id = request.form.get('folder_id')
-    
-    if folder_id == '':
-        question.folder_id = None
-    else:
-        folder = Folder.query.filter_by(id=folder_id, user_id=current_user.id).first_or_404()
-        question.folder_id = folder.id
-        
-    db.session.commit()
-    return jsonify({'success': True})
-
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(host='0.0.0.0', port=5000)
+@app.route('/upgrade')
+@login_required
+def upgrade():
+    return render_template('upgrade.html', stripe_public_key=app.config['STRIPE_PUBLIC_KEY'])
+
+@app.route('/create-checkout-session', methods=['POST'])
+@login_required
+def create_checkout():
+    plan = request.form.get('plan')
+    
+    if plan == 'annual':
+        price = 1000  # $10.00
+        interval = 'year'
+    else:
+        price = 1500  # $15.00
+        interval = 'month'
+    
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'unit_amount': price,
+                    'product_data': {
+                        'name': f'Cloot {interval.capitalize()} Plan',
+                    },
+                    'recurring': {
+                        'interval': interval,
+                    }
+                },
+                'quantity': 1,
+            }],
+            mode='subscription',
+            success_url=request.host_url + 'payment-success',
+            cancel_url=request.host_url + 'upgrade',
+            customer_email=current_user.username
+        )
+        return jsonify({'id': checkout_session.id})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 403
+
+@app.route('/payment-success')
+@login_required
+def payment_success():
+    return render_template('payment_success.html')
