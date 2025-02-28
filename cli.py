@@ -166,7 +166,7 @@ def folders():
 @login_required
 def folder_details(folder_id):
     folder = Folder.query.filter_by(id=folder_id, user_id=current_user.id).first_or_404()
-    questions = Question.query.filter_by(folder_id=folder_id).order_by(Question.timestamp.desc()).all()
+    questions = Question.query.filter_by(folder_id=folder_id, user_id=current_user.id).order_by(Question.timestamp.desc()).all()
     return render_template('folder_details.html', folder=folder, questions=questions)
 
 @app.route('/folders/<int:folder_id>/delete', methods=['POST'])
