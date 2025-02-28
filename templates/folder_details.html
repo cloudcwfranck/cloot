@@ -11,38 +11,9 @@
             padding: 0;
         }
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 900px;
+            margin: 20px auto;
             padding: 20px;
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
-        .question-list {
-            list-style: none;
-            padding: 0;
-        }
-        .question-item {
-            background: white;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .question-query {
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-        .question-response {
-            white-space: pre-wrap;
-            padding: 10px;
-            background: #f9f9f9;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        .question-meta {
-            color: #666;
-            font-size: 0.9em;
         }
         .navbar {
             background: #4444ff;
@@ -62,21 +33,48 @@
             font-weight: bold;
             text-decoration: none;
         }
+        h1 {
+            margin-bottom: 20px;
+        }
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
             color: #4444ff;
             text-decoration: none;
         }
-        .back-link:hover {
-            text-decoration: underline;
+        .question-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
-        .no-questions {
+        .question-card {
             background: white;
-            padding: 20px;
-            text-align: center;
             border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .question-query {
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .question-response {
+            white-space: pre-wrap;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .question-date {
+            font-size: 12px;
             color: #666;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -84,8 +82,8 @@
     <div class="navbar">
         <a href="{{ url_for('home') }}" class="navbar-brand">Cloot</a>
         <div>
-            <a href="{{ url_for('home') }}">Home</a>
             <a href="{{ url_for('folders') }}">Folders</a>
+            <a href="{{ url_for('home') }}">Home</a>
             <a href="{{ url_for('logout') }}">Logout</a>
         </div>
     </div>
@@ -95,18 +93,18 @@
         <h1>{{ folder.name }}</h1>
         
         {% if questions %}
-            <ul class="question-list">
+            <div class="question-list">
                 {% for question in questions %}
-                    <li class="question-item">
+                    <div class="question-card">
                         <div class="question-query">{{ question.query }}</div>
                         <div class="question-response">{{ question.response }}</div>
-                        <div class="question-meta">Asked on {{ question.timestamp.strftime('%Y-%m-%d %H:%M') }}</div>
-                    </li>
+                        <div class="question-date">{{ question.timestamp.strftime('%Y-%m-%d %H:%M') }}</div>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% else %}
-            <div class="no-questions">
-                <p>No questions in this folder yet.</p>
+            <div class="empty-state">
+                <p>This folder is empty. Add questions to it from the main page.</p>
             </div>
         {% endif %}
     </div>
