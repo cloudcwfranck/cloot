@@ -11,6 +11,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['STRIPE_PUBLIC_KEY'] = 'your_stripe_public_key'
 app.config['STRIPE_SECRET_KEY'] = 'your_stripe_secret_key'
+app.config['DEBUG'] = True  # Enable debug mode to see detailed error messages
 
 import stripe
 stripe.api_key = app.config['STRIPE_SECRET_KEY']
@@ -116,10 +117,15 @@ def ask_endpoint():
             })
         
         try:
+            # Verify OpenAI helper is properly initialized
+            if not hasattr(ai_helper, 'api_key') or not ai_helper.api_key:
+                print("OpenAI API key not configured")
+                return jsonify({'error': 'OpenAI API key not configured'}), 500
+                
             response = ai_helper.generate_response(query)
             print(f"AI Response: {response}")
             
-            if response.startswith('Error:'):
+            if response and response.startswith('Error:'):
                 print(f"Error in response: {response}")
                 return jsonify({'error': response}), 500
             elif not response:
