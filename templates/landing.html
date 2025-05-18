@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Unlocking Human Potential with Generative AI</title>
+    <title>Cloot - AI-Powered Cloud Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * {
             margin: 0;
@@ -23,6 +24,11 @@
             align-items: center;
             padding: 20px 40px;
             background: #fff;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .logo {
@@ -40,165 +46,247 @@
             color: #000;
             text-decoration: none;
             font-size: 14px;
+            transition: color 0.2s;
         }
 
-        .contact-button {
-            background: transparent;
-            color: #000;
+        .nav-links a:hover {
+            color: #6E56CF;
+        }
+
+        .login-button {
+            background: #000;
+            color: #fff;
             padding: 8px 16px;
             border-radius: 6px;
-            border: 1px solid #000;
+            transition: background 0.2s;
+        }
+
+        .login-button:hover {
+            background: #333;
         }
 
         .hero {
-            padding: 80px 20px;
+            padding: 160px 20px 80px;
             text-align: center;
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-content {
+            text-align: left;
+        }
+
+        .animated-cloud {
+            width: 100%;
+            height: 400px;
+            background: #f8f9ff;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cloud-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M25,60 Q40,40 75,60" stroke="%236E56CF" fill="none"/></svg>') no-repeat center;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
         h1 {
-            font-size: 64px;
+            font-size: 56px;
             line-height: 1.2;
             margin-bottom: 20px;
         }
 
-        .hero p {
+        .hero-subtitle {
+            font-size: 20px;
             color: #666;
             margin-bottom: 40px;
-            font-size: 20px;
-            font-weight: 500;
-        }
-
-        .hero-subtitle {
-            font-size: 24px !important;
-            color: #333 !important;
-            font-weight: 600 !important;
         }
 
         .cta-button {
             display: inline-block;
-            background: #000;
+            background: #6E56CF;
             color: #fff;
-            padding: 15px 30px;
-            border-radius: 8px;
+            padding: 18px 36px;
+            border-radius: 12px;
             text-decoration: none;
             font-size: 18px;
-            margin-bottom: 40px;
-            transition: transform 0.2s;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(110, 86, 207, 0.3);
         }
 
         .cta-button:hover {
             transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(110, 86, 207, 0.4);
         }
 
-        .tabs {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
+        .benefits {
+            padding: 80px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .benefits h2 {
+            text-align: center;
+            font-size: 36px;
             margin-bottom: 40px;
         }
 
-        .tab {
-            padding: 8px 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-
-        .tab.active {
-            background: #000;
-            color: #fff;
-            border-color: #000;
-        }
-
-        .tab-new {
-            position: relative;
-        }
-
-        .tab-new::after {
-            content: 'NEW';
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #6E56CF;
-            color: #fff;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-        }
-
-        .image-grid {
+        .benefits-list {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            padding: 0 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 60px;
         }
 
-        .image-grid img {
-            width: 100%;
-            border-radius: 12px;
-            aspect-ratio: 16/9;
-            object-fit: cover;
+        .benefit-item {
+            padding: 30px;
+            background: #f8f9ff;
+            border-radius: 16px;
+            transition: transform 0.3s;
         }
 
-        .build-section {
-            padding: 100px 40px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
+        .benefit-item:hover {
+            transform: translateY(-5px);
         }
 
-        .model-info h2 {
+        .benefit-icon {
             font-size: 32px;
             margin-bottom: 20px;
         }
 
-        .model-info p {
-            color: #666;
-            margin-bottom: 30px;
+        .features {
+            padding: 80px 40px;
+            background: #f8f9ff;
         }
 
-        .buttons {
-            display: flex;
-            gap: 20px;
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .black-button {
+        .feature-card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .testimonials {
+            padding: 80px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .testimonial-card {
+            padding: 30px;
+            background: #f8f9ff;
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            font-size: 60px;
+            color: #6E56CF;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            opacity: 0.2;
+        }
+
+        footer {
             background: #000;
             color: #fff;
-            padding: 12px 24px;
-            border-radius: 6px;
-            text-decoration: none;
+            padding: 60px 40px;
         }
 
-        .outline-button {
-            border: 1px solid #000;
-            color: #000;
-            padding: 12px 24px;
-            border-radius: 6px;
-            text-decoration: none;
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
         }
 
-        .platform-links {
-            margin-top: 60px;
-        }
-
-        .platform-link {
-            display: block;
-            color: #000;
-            text-decoration: none;
+        .footer-links h4 {
             margin-bottom: 20px;
-            font-weight: 500;
         }
 
-        .platform-link::after {
-            content: '→';
-            margin-left: 10px;
+        .footer-links a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 120px 20px 40px;
+                text-align: center;
+            }
+
+            .hero-content {
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .benefits-list, .feature-grid, .testimonial-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .cta-button {
+                padding: 15px 30px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -206,58 +294,111 @@
     <nav class="nav">
         <div class="logo">Cloot</div>
         <div class="nav-links">
-            <a href="{{ url_for('login') }}" class="contact-button">Login</a>
+            <a href="#">Home</a>
+            <a href="#">Features</a>
+            <a href="#">How It Works</a>
+            <a href="#">Docs</a>
+            <a href="{{ url_for('login') }}" class="login-button">Login</a>
         </div>
     </nav>
 
     <section class="hero">
-        <h1>Your AI-Powered Cloud Assistant – Solve IT Issues Faster!</h1>
-        <p class="hero-subtitle">Over 100k developers have saved 2.5 hours daily with Cloot.</p>
-        <a href="{{ url_for('register') }}" class="cta-button">Start Using Cloot For Free</a>
-        
-        <div class="tabs">
-            <div class="tab active">Cloud</div>
-            <div class="tab">Infrastructure</div>
-            <div class="tab">Automation</div>
-            <div class="tab">Security</div>
-            <div class="tab tab-new">Code</div>
+        <div class="hero-content">
+            <h1>Your AI-Powered Cloud Assistant</h1>
+            <p class="hero-subtitle">Trusted by 100K+ developers. Save 2.5 hours per day with our AI-powered assistant.</p>
+            <a href="{{ url_for('register') }}" class="cta-button">Try Cloot Free – Start Solving IT Issues Now</a>
+        </div>
+        <div class="animated-cloud">
+            <div class="cloud-animation"></div>
         </div>
     </section>
 
-    <section class="build-section">
-        <div class="model-info">
-            <h2>Cloud Infrastructure Assistant</h2>
-            <p>Our advanced AI assistant helps you manage cloud infrastructure, automate tasks, and resolve technical issues faster than ever before.</p>
-            
-            <div class="buttons">
-                <a href="https://github.com/cloudcwfranck/cloot" class="black-button">Contribute</a>
-                <a href="{{ url_for('register') }}" class="outline-button">Get Started</a>
+    <section class="benefits">
+        <h2>Why Cloot?</h2>
+        <div class="benefits-list">
+            <div class="benefit-item">
+                <div class="benefit-icon">🚀</div>
+                <h3>Manage Cloud Infrastructure</h3>
+                <p>Simplify your cloud management with AI-powered assistance</p>
             </div>
-
-            <div class="platform-links">
-                <a href="#" class="platform-link">IT Engineers</a>
-                <a href="#" class="platform-link">History Tracking</a>
-                <a href="#" class="platform-link">Critical Reasoning</a>
+            <div class="benefit-item">
+                <div class="benefit-icon">⚡</div>
+                <h3>Automate IT Tasks</h3>
+                <p>Eliminate repetitive work with smart automation</p>
             </div>
-        </div>
-        <div class="image-grid">
-            <img src="https://picsum.photos/800/600" alt="AI Generated Art">
-            <img src="https://picsum.photos/800/601" alt="AI Generated Art">
-            <img src="https://picsum.photos/800/602" alt="AI Generated Art">
-            <img src="https://picsum.photos/800/603" alt="AI Generated Art">
+            <div class="benefit-item">
+                <div class="benefit-icon">⏱️</div>
+                <h3>Rapid Issue Resolution</h3>
+                <p>Resolve cloud issues in minutes, not hours</p>
+            </div>
         </div>
     </section>
 
-    <footer style="background: #000; color: #fff; padding: 40px 20px;">
-        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-            <div class="logo" style="font-size: 24px; font-weight: 700;">Cloot</div>
-            <div style="display: flex; gap: 40px; align-items: center;">
-                <a href="{{ url_for('login') }}" style="color: #fff; text-decoration: none;">Login</a>
-                <span>© 2025 Cloot All Rights Reserved</span>
+    <section class="features">
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>Infrastructure Management</h3>
+                <p>Manage your cloud resources with intelligent suggestions and automation</p>
+            </div>
+            <div class="feature-card">
+                <h3>Cost Optimization</h3>
+                <p>Get AI-powered recommendations to optimize your cloud spending</p>
+            </div>
+            <div class="feature-card">
+                <h3>Security Compliance</h3>
+                <p>Ensure your infrastructure follows best security practices</p>
+            </div>
+            <div class="feature-card">
+                <h3>Performance Monitoring</h3>
+                <p>Track and optimize your cloud infrastructure performance</p>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 20px; color: #666;">
-            Developed with ❤️ by <a href="https://www.cloudcraftwithfranck.org/" style="color: #666; text-decoration: none;">cloudcraftwithfranck.org</a>
+    </section>
+
+    <section class="testimonials">
+        <h2>What Developers Say</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <p>"Cloot has revolutionized how we manage our cloud infrastructure. It's like having an expert cloud engineer available 24/7."</p>
+                <cite>- Sarah Chen, Senior DevOps Engineer</cite>
+            </div>
+            <div class="testimonial-card">
+                <p>"The time savings are incredible. What used to take hours now takes minutes with Cloot's AI assistance."</p>
+                <cite>- Michael Rodriguez, Cloud Architect</cite>
+            </div>
+            <div class="testimonial-card">
+                <p>"Finally, an AI assistant that actually understands cloud infrastructure and can help solve real problems."</p>
+                <cite>- Alex Thompson, Tech Lead</cite>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <h4>Product</h4>
+                <a href="#">Features</a>
+                <a href="#">How It Works</a>
+                <a href="#">Pricing</a>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <a href="#">Documentation</a>
+                <a href="#">API Reference</a>
+                <a href="#">Blog</a>
+            </div>
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Security</a>
+            </div>
+            <div class="footer-links">
+                <h4>Connect</h4>
+                <a href="https://github.com/cloudcwfranck/cloot">GitHub</a>
+                <a href="#">Twitter</a>
+                <a href="#">Discord</a>
+            </div>
         </div>
     </footer>
 </body>
