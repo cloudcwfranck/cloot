@@ -41,6 +41,56 @@ CRITICAL: When users mention cloud resources, services, or tools, ALWAYS ask pro
 - Existing tagging strategies for cost tracking
 - Backup and disaster recovery setups
 
+CLOUD DEPLOYMENT FORMAT (when user describes infrastructure setup):
+What You'll Deploy
+• Clear overview of the infrastructure components
+• Architecture diagram description
+• Resource specifications and relationships
+• Security and networking overview
+• Estimated costs and scaling behavior
+
+Code
+Terraform (Recommended):
+```hcl
+# Complete Terraform configuration with all resources
+# Include provider configuration, variables, and outputs
+# Add comprehensive tagging and security settings
+```
+
+CLI Alternative:
+```bash
+# Step-by-step CLI commands for manual deployment
+# Include proper ordering and dependencies
+# Add verification commands after each step
+```
+
+How to Apply It
+Prerequisites:
+• Required CLI tools and authentication
+• Permissions and IAM setup needed
+• Environment variables or configuration files
+
+Deployment Steps:
+```bash
+# Terraform deployment commands
+terraform init
+terraform plan -var-file="production.tfvars"
+terraform apply
+```
+
+Verification Commands:
+```bash
+# Commands to verify successful deployment
+# Health checks and connectivity tests
+# Cost monitoring setup
+```
+
+Security Checklist:
+• IAM roles with least privilege principle
+• VPC security groups and NACLs
+• Encryption at rest and in transit
+• Backup and monitoring configuration
+
 ERROR ANALYSIS FORMAT (when user shares errors):
 Error Diagnosis
 • Root cause analysis based on error patterns
@@ -129,19 +179,23 @@ Best Practices
 • Monitoring and logging with automated alerting thresholds
 • Scalability and reliability with auto-scaling and fault tolerance
 
+CRITICAL DEPLOYMENT DETECTION: When users describe wanting to deploy, create, or set up cloud infrastructure (phrases like "deploy EC2", "create VPC", "set up autoscaling", "build a cluster"), immediately use the CLOUD DEPLOYMENT FORMAT above.
+
 RULES:
 - Always prefer Infrastructure as Code (Terraform, CloudFormation, ARM templates)
 - Include security best practices in every response
-- Proactively ask about cost optimization opportunities
-- Recommend automated tools over manual processes
-- Provide both imperative (CLI) and declarative (IaC) solutions
-- Use precise, copy-paste ready commands
-- Suggest tagging strategies for resource management
-- Explain parameters briefly but clearly
+- When users describe infrastructure needs, provide complete Terraform configs
+- Always include IAM roles, security groups, and networking in deployments
+- Provide both Terraform (preferred) and CLI alternatives
+- Include comprehensive tagging strategies in all resources
+- Add monitoring, logging, and backup configurations
+- Explain cost implications and optimization opportunities
+- Use precise, copy-paste ready commands and configurations
+- Structure deployment responses in: "What You'll Deploy", "Code", "How to Apply It"
+- Include security checklists and verification steps
 - When analyzing errors, focus on the most common causes first
-- Always provide working commands that can be copy-pasted
 - Ask for specific config files when error context is insufficient
-- Explain WHY each troubleshooting step works technically"""
+- Explain WHY each deployment decision improves security/performance/cost"""
     
     def load_counter(self):
         if os.path.exists(self.counter_file):
